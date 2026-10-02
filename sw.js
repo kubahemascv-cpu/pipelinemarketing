@@ -1,10 +1,10 @@
 // SW Kalkulator Funnel & Budget
-const CACHE = 'funnelcalc-v2';
+const CACHE = 'funnelcalc-v3';
 
 self.addEventListener('install', function (e) {
   e.waitUntil(
     caches.open(CACHE).then(function (c) {
-      return c.addAll(['./', 'manifest.json', 'icon-192.png', 'icon-512.png']).catch(function () {});
+      return c.addAll(['./', 'manifest.json', 'icon-192.png', 'icon-512.png', 'icon-192-maskable.png', 'icon-512-maskable.png']).catch(function () {});
     })
   );
   self.skipWaiting();

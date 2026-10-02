@@ -63,9 +63,24 @@ input,select,button{font-family:var(--font)}
 .funnel-step{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--bdr)}
 .funnel-step:last-child{border-bottom:none}
 .funnel-step .step-lbl{font-size:11.5px;color:var(--txt2);font-weight:600}
+.funnel-step .step-rate{font-size:9px;color:var(--mut);font-weight:400}
 .funnel-step .step-val{font-size:12.5px;color:var(--txt);font-weight:800}
 
 .rate-note{font-size:9.5px;color:var(--mut);margin-top:10px;line-height:1.6;background:var(--bg);border-radius:8px;padding:9px 11px}
+
+.compare-row{padding:10px 0;border-bottom:1px solid var(--bdr)}
+.compare-row:last-child{border-bottom:none}
+.compare-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.compare-lbl{font-size:11.5px;font-weight:700;color:var(--txt2)}
+.compare-badge{font-size:9px;font-weight:800;padding:2px 8px;border-radius:20px}
+.compare-badge.good{background:var(--grn-l);color:var(--grn)}
+.compare-badge.warn{background:var(--amb-l);color:var(--amb)}
+.compare-badge.bad{background:var(--red-l);color:var(--red)}
+.compare-nums{font-size:10px;color:var(--mut)}
+.compare-nums b{color:var(--txt)}
+.leak-box{background:var(--red-l);border:1.5px solid #FECACA;border-radius:12px;padding:14px;margin-top:14px}
+.leak-box .leak-title{font-size:12px;font-weight:800;color:var(--red);margin-bottom:4px}
+.leak-box .leak-body{font-size:11px;color:var(--txt2);line-height:1.6}
 
 .loading{text-align:center;padding:40px 20px;color:var(--mut);font-size:12px}
 .err-box{text-align:center;padding:30px 20px;color:var(--red);font-size:11.5px;line-height:1.6}
@@ -235,6 +250,7 @@ function renderApp(){
       <div class="tab-btn active" data-tab="a" onclick="switchTab('a')">🎯 Omzet<br>→ Budget</div>
       <div class="tab-btn" data-tab="b" onclick="switchTab('b')">💰 Budget<br>→ Omzet</div>
       <div class="tab-btn" data-tab="c" onclick="switchTab('c')">📇 Leads<br>→ Omzet</div>
+      <div class="tab-btn" data-tab="d" onclick="switchTab('d')">🔍 Kontrol<br>Aktual</div>
     </div>
 
     <div class="tab-panel active" data-panel="a">
@@ -282,6 +298,22 @@ function renderApp(){
         <div class="result-box" id="result-c"></div>
       </div>
     </div>
+
+    <div class="tab-panel" data-panel="d">
+      <div class="card">
+        <div class="card-title">Kontrol Aktual — Rencana vs Kenyataan</div>
+        <div class="card-desc">Isi angka AKTUAL hasil campaign (periode bebas, gak perlu per-hari). App bandingin tiap tahap ke rate IDEAL dari Pipeline Marketing, kasih tau tahap mana yang paling "bocor".</div>
+        <div class="form-row"><label>Impression</label><input type="number" inputmode="numeric" min="0" id="input-d-impression" placeholder="0"></div>
+        <div class="form-row"><label>Klik / CTR</label><input type="number" inputmode="numeric" min="0" id="input-d-klikctr" placeholder="0"></div>
+        <div class="form-row"><label>LP View</label><input type="number" inputmode="numeric" min="0" id="input-d-lpview" placeholder="0"></div>
+        <div class="form-row"><label>Klik CTA</label><input type="number" inputmode="numeric" min="0" id="input-d-klikcta" placeholder="0"></div>
+        <div class="form-row"><label>Leads Masuk</label><input type="number" inputmode="numeric" min="0" id="input-d-leads" placeholder="0"></div>
+        <div class="form-row"><label>Closing Survey</label><input type="number" inputmode="numeric" min="0" id="input-d-survey" placeholder="0"></div>
+        <div class="form-row"><label>Closing Deal</label><input type="number" inputmode="numeric" min="0" id="input-d-deal" placeholder="0"></div>
+        <button class="btn btn-primary" onclick="runCalcD()">Analisa</button>
+        <div class="result-box" id="result-d"></div>
+      </div>
+    </div>
   `;
 }
 
@@ -303,6 +335,21 @@ function numRupiah(id){
   return raw?+raw:0;
 }
 
+function pct1(r){ return (r*100).toFixed(1)+'%'; }
+
+function funnelStepsHTML(r){
+  const m = RATES.meta;
+  return `
+    <div class="funnel-step"><span class="step-lbl">Impression</span><span class="step-val">${fmtNum(r.impression)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Klik / CTR <span class="step-rate">(${pct1(m.rateKlikCtrImpression)} dari Impression)</span></span><span class="step-val">${fmtNum(r.klikCtr)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">LP View <span class="step-rate">(${pct1(m.rateLpViewKlikCtr)} dari Klik/CTR)</span></span><span class="step-val">${fmtNum(r.lpView)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Klik CTA <span class="step-rate">(${pct1(m.rateKlikCtaLpView)} dari LP View)</span></span><span class="step-val">${fmtNum(r.klikCta)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Leads Masuk <span class="step-rate">(${pct1(m.rateLeadsKlikCta)} dari Klik CTA)</span></span><span class="step-val">${fmtNum(r.leads)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Closing Survey <span class="step-rate">(${pct1(m.rateSurveyLeads)} dari Leads)</span></span><span class="step-val">${fmtNum(r.survey)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Closing Deal <span class="step-rate">(${pct1(m.rateDealSurvey)} dari Survey)</span></span><span class="step-val">${fmtNum(r.deal)}</span></div>
+  `;
+}
+
 function runCalcA(){
   const omzet = numRupiah('input-a');
   if(omzet<=0){ return; }
@@ -313,13 +360,8 @@ function runCalcA(){
       <div class="val">${fmt(r.budgetTotal)}</div>
       <div class="sub">${fmt(r.budgetHarian)} / hari · ${RATES.meta.hariAktif} hari aktif</div>
     </div>
-    <div class="funnel-step"><span class="step-lbl">Impression</span><span class="step-val">${fmtNum(r.impression)}</span></div>
-    <div class="funnel-step"><span class="step-lbl">Klik / CTR</span><span class="step-val">${fmtNum(r.klikCtr)}</span></div>
-    <div class="funnel-step"><span class="step-lbl">LP View</span><span class="step-val">${fmtNum(r.lpView)}</span></div>
-    <div class="funnel-step"><span class="step-lbl">Klik CTA</span><span class="step-val">${fmtNum(r.klikCta)}</span></div>
-    <div class="funnel-step"><span class="step-lbl">Leads Masuk</span><span class="step-val">${fmtNum(r.leads)}</span></div>
-    <div class="funnel-step"><span class="step-lbl">Closing Survey</span><span class="step-val">${fmtNum(r.survey)}</span></div>
-    <div class="funnel-step"><span class="step-lbl">Closing Deal</span><span class="step-val">${fmtNum(r.deal)}</span></div>
+    ${funnelStepsHTML(r)}
+    <div class="rate-note">CPM (biaya per 1000 Impression): ${fmt(RATES.meta.cpm)}. Semua rate di atas diambil live dari sheet Pipeline Marketing.</div>
   `;
   document.getElementById('result-a').classList.add('show');
 }
@@ -334,13 +376,8 @@ function runCalcB(){
       <div class="val">${fmt(r.omzet)}</div>
       <div class="sub">${fmtNum(r.deal)} Deal · ${fmt(r.budgetHarian)}/hari selama ${RATES.meta.hariAktif} hari</div>
     </div>
-    <div class="funnel-step"><span class="step-lbl">Impression</span><span class="step-val">${fmtNum(r.impression)}</span></div>
-    <div class="funnel-step"><span class="step-lbl">Klik / CTR</span><span class="step-val">${fmtNum(r.klikCtr)}</span></div>
-    <div class="funnel-step"><span class="step-lbl">LP View</span><span class="step-val">${fmtNum(r.lpView)}</span></div>
-    <div class="funnel-step"><span class="step-lbl">Klik CTA</span><span class="step-val">${fmtNum(r.klikCta)}</span></div>
-    <div class="funnel-step"><span class="step-lbl">Leads Masuk</span><span class="step-val">${fmtNum(r.leads)}</span></div>
-    <div class="funnel-step"><span class="step-lbl">Closing Survey</span><span class="step-val">${fmtNum(r.survey)}</span></div>
-    <div class="funnel-step"><span class="step-lbl">Closing Deal</span><span class="step-val">${fmtNum(r.deal)}</span></div>
+    ${funnelStepsHTML(r)}
+    <div class="rate-note">CPM (biaya per 1000 Impression): ${fmt(RATES.meta.cpm)}. Semua rate di atas diambil live dari sheet Pipeline Marketing.</div>
   `;
   document.getElementById('result-b').classList.add('show');
 }
@@ -364,6 +401,71 @@ function runCalcC(){
     <div class="rate-note">Rate dipakai: Leads Respon ${(r2.rateLeadsResponLeadsFu*100).toFixed(1)}% dari total leads, Closing Survey ${(r2.rateSurveyLeadsRespon*100).toFixed(1)}% dari yang respon, Closing Deal ${(r2.rateDealSurvey*100).toFixed(1)}% dari Survey.</div>
   `;
   document.getElementById('result-c').classList.add('show');
+}
+
+// ══════════════════════════════════════════════════════
+// MODE KONTROL AKTUAL — bandingin rate AKTUAL (dari input user) vs
+// rate IDEAL (dari sheet Pipeline Marketing). Ambang batas good/warn/
+// bad (90%/60% dari ideal) itu ketentuan saya sendiri, bukan dari
+// sheet — biar ada acuan jelas, bisa disesuaikan kalau mau beda.
+function classifyRatio(ratio){
+  if(ratio===null) return '';
+  if(ratio>=0.9) return 'good';
+  if(ratio>=0.6) return 'warn';
+  return 'bad';
+}
+function badgeText(ratio){
+  if(ratio===null) return '—';
+  return Math.round(ratio*100)+'% dari ideal';
+}
+
+function runCalcD(){
+  const impression = +document.getElementById('input-d-impression').value || 0;
+  const klikCtr = +document.getElementById('input-d-klikctr').value || 0;
+  const lpView = +document.getElementById('input-d-lpview').value || 0;
+  const klikCta = +document.getElementById('input-d-klikcta').value || 0;
+  const leads = +document.getElementById('input-d-leads').value || 0;
+  const survey = +document.getElementById('input-d-survey').value || 0;
+  const deal = +document.getElementById('input-d-deal').value || 0;
+
+  const m = RATES.meta;
+  const steps = [
+    {label:'Impression → Klik/CTR', actual: impression>0?klikCtr/impression:null, ideal: m.rateKlikCtrImpression, aVal:klikCtr, bVal:impression, aLbl:'Klik/CTR', bLbl:'Impression'},
+    {label:'Klik/CTR → LP View', actual: klikCtr>0?lpView/klikCtr:null, ideal: m.rateLpViewKlikCtr, aVal:lpView, bVal:klikCtr, aLbl:'LP View', bLbl:'Klik/CTR'},
+    {label:'LP View → Klik CTA', actual: lpView>0?klikCta/lpView:null, ideal: m.rateKlikCtaLpView, aVal:klikCta, bVal:lpView, aLbl:'Klik CTA', bLbl:'LP View'},
+    {label:'Klik CTA → Leads', actual: klikCta>0?leads/klikCta:null, ideal: m.rateLeadsKlikCta, aVal:leads, bVal:klikCta, aLbl:'Leads', bLbl:'Klik CTA'},
+    {label:'Leads → Survey', actual: leads>0?survey/leads:null, ideal: m.rateSurveyLeads, aVal:survey, bVal:leads, aLbl:'Survey', bLbl:'Leads'},
+    {label:'Survey → Deal', actual: survey>0?deal/survey:null, ideal: m.rateDealSurvey, aVal:deal, bVal:survey, aLbl:'Deal', bLbl:'Survey'},
+  ];
+
+  let worst = null;
+  steps.forEach(function(s){
+    s.ratio = (s.actual!==null && s.ideal>0) ? s.actual/s.ideal : null;
+    s.cls = classifyRatio(s.ratio);
+    if(s.ratio!==null && (worst===null || s.ratio<worst.ratio)) worst=s;
+  });
+
+  const rowsHTML = steps.map(function(s){
+    return `
+      <div class="compare-row">
+        <div class="compare-hd">
+          <span class="compare-lbl">${s.label}</span>
+          <span class="compare-badge ${s.cls||'warn'}">${badgeText(s.ratio)}</span>
+        </div>
+        <div class="compare-nums">Aktual: <b>${(s.actual!==null?pct1(s.actual):'—')}</b> vs Ideal: <b>${pct1(s.ideal)}</b> (${s.bVal.toLocaleString('id-ID')} ${s.bLbl} → ${s.aVal.toLocaleString('id-ID')} ${s.aLbl})</div>
+      </div>
+    `;
+  }).join('');
+
+  const leakHTML = worst ? `
+    <div class="leak-box">
+      <div class="leak-title">⚠️ Paling Bocor: ${worst.label}</div>
+      <div class="leak-body">Aktual cuma ${badgeText(worst.ratio)} dibanding rate ideal (${pct1(worst.ideal)}). Ini tahap yang paling butuh perbaikan duluan — gak ada gunanya nambah budget atas (Impression) kalau bocornya di sini.</div>
+    </div>
+  ` : '';
+
+  document.getElementById('result-d').innerHTML = rowsHTML + leakHTML;
+  document.getElementById('result-d').classList.add('show');
 }
 
 // ══════════════════════════════════════════════════════
