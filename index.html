@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Kalkulator Funnel & Budget</title>
+<meta name="theme-color" content="#1C1E26">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kalkulator Funnel">
+<link rel="apple-touch-icon" href="icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F5F0;--card:#FFFFFF;--card2:#F9F9F6;--bdr:#E8E6DD;
+  --txt:#1C1E26;--txt2:#44454F;--mut:#7A7B85;
+  --yel:#F5C518;--yel-d:#C89B00;--yel-l:#FFF9E0;
+  --grn:#16A34A;--grn-l:#F0FDF4;
+  --amb:#D97706;--amb-l:#FFFBEB;
+  --red:#DC2626;--red-l:#FEF2F2;
+  --shd:0 2px 10px rgba(28,30,38,.06);
+  --font:'Poppins',-apple-system,sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--txt);min-height:100vh;-webkit-font-smoothing:antialiased}
+input,select,button{font-family:var(--font)}
+
+.topbar{background:linear-gradient(135deg,#1C1E26,#2A2C38);padding:16px 18px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.2)}
+.tb-title{font-size:14px;font-weight:800;color:#fff}
+.tb-sub{font-size:10.5px;color:rgba(255,255,255,.6);margin-top:1px}
+
+.wrap{max-width:640px;margin:0 auto;padding:18px 16px 60px}
+
+.tabs{display:flex;gap:6px;margin-bottom:16px}
+.tab-btn{flex:1;padding:11px 8px;border-radius:12px;background:var(--card);border:1.5px solid var(--bdr);font-size:10.5px;font-weight:700;color:var(--mut);text-align:center;cursor:pointer;line-height:1.4}
+.tab-btn.active{background:var(--txt);border-color:var(--txt);color:#fff}
+
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+.card{background:var(--card);border-radius:16px;padding:18px;box-shadow:var(--shd);border:1px solid var(--bdr);margin-bottom:14px}
+.card-title{font-size:13px;font-weight:800;color:var(--txt);margin-bottom:4px}
+.card-desc{font-size:10.5px;color:var(--mut);margin-bottom:16px;line-height:1.6}
+
+.form-row{margin-bottom:14px}
+.form-row label{display:block;font-size:11.5px;font-weight:700;color:var(--txt2);margin-bottom:6px}
+.form-row input,.form-row select{width:100%;padding:12px 14px;border:1.5px solid var(--bdr);border-radius:10px;font-size:14px;color:var(--txt);background:var(--bg);outline:none}
+.form-row input:focus,.form-row select:focus{border-color:var(--yel-d)}
+
+.btn{padding:14px 20px;border-radius:12px;border:none;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;width:100%}
+.btn-primary{background:linear-gradient(135deg,var(--yel),var(--yel-d));color:#1C1E26}
+
+.result-box{background:var(--card2);border-radius:14px;padding:16px;margin-top:16px;display:none}
+.result-box.show{display:block}
+.result-hero{text-align:center;padding:14px 0 18px;border-bottom:1px solid var(--bdr);margin-bottom:14px}
+.result-hero .lbl{font-size:10.5px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.result-hero .val{font-size:26px;font-weight:800;color:var(--txt);margin-top:4px}
+.result-hero .sub{font-size:11px;color:var(--mut);margin-top:4px}
+
+.funnel-step{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--bdr)}
+.funnel-step:last-child{border-bottom:none}
+.funnel-step .step-lbl{font-size:11.5px;color:var(--txt2);font-weight:600}
+.funnel-step .step-val{font-size:12.5px;color:var(--txt);font-weight:800}
+
+.rate-note{font-size:9.5px;color:var(--mut);margin-top:10px;line-height:1.6;background:var(--bg);border-radius:8px;padding:9px 11px}
+
+.loading{text-align:center;padding:40px 20px;color:var(--mut);font-size:12px}
+.err-box{text-align:center;padding:30px 20px;color:var(--red);font-size:11.5px;line-height:1.6}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="tb-title">🧮 Kalkulator Funnel & Budget</div>
+  <div class="tb-sub">Berdasarkan Pipeline Marketing — rate live dari sheet</div>
+</header>
+
+<div class="wrap">
+  <div id="content">
+    <div class="loading">⏳ Mengambil rate konversi dari sheet...</div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// SUMBER DATA — Pipeline Marketing sheet
+// ══════════════════════════════════════════════════════
+const SHEET_ID = '1yVP3lGxCx88FDI5fgXQHdXF1G0gWldsSs7fT7RKDNPg';
+const GID = 0;
+
+function fmt(n){ return 'Rp ' + Math.round(n||0).toLocaleString('id-ID'); }
+function fmtNum(n){ return Math.round(n||0).toLocaleString('id-ID'); }
+function parseNumStr(s){
+  if(typeof s==='number') return s;
+  var clean=String(s||'').replace(/[^0-9,.-]/g,'').replace(/\./g,'').replace(',','.');
+  return parseFloat(clean)||0;
+}
+
+function gviz(){
+  var url='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?gid='+GID+'&tqx=out:json&range=A1:P12';
+  return fetch(url).then(function(r){return r.text();}).then(function(txt){
+    var json=JSON.parse(txt.substring(txt.indexOf('{'), txt.lastIndexOf('}')+1));
+    return json.table;
+  });
+}
+
+function parseTable(table){
+  var rows=table.rows.map(function(row){
+    return (row.c||[]).map(function(cell){
+      return cell && cell.v!==null && cell.v!==undefined ? cell.v : '';
+    });
+  });
+  return rows;
+}
+
+// ══════════════════════════════════════════════════════
+// TURUNIN RATE DARI ANGKA MENTAH (bukan dari teks label) —
+// biar gak kesandung typo label kayak sebelumnya. Posisi kolom:
+// A=Channel,B=HariAktif,C=OmzetPerusahaan,D=%,E=OmzetChannel,
+// F=RataNilaiProyek,G=ClosingDeal,H=ClosingSurvey,I=LeadsMasuk/Respon,
+// J=KlikCTA/LeadsFU,K=LPView/FUPerHari,L=Klik-CTR,M=Impression,
+// N=CPM,O=Budget,P=BudgetHarian
+// ══════════════════════════════════════════════════════
+var RATES = null;
+
+function deriveRates(rows){
+  // Baris di-index dari 0. Baris 2 di sheet (Meta Ads) = index 1.
+  // Baris 6 (FU Database) = index 5. Baris 7 (Repeat) = index 6.
+  function col(row,i){ return parseNumStr(row[i]); }
+
+  var metaRow = rows[1]; // Meta Ads
+  var dbRow = rows[5];   // Follow Up Database
+  var repRow = rows[6];  // Repeat
+
+  var meta = {
+    hariAktif: col(metaRow,1),
+    rataNilaiProyek: col(metaRow,5),
+    rateDealSurvey: col(metaRow,6)/col(metaRow,7),       // G/H
+    rateSurveyLeads: col(metaRow,7)/col(metaRow,8),      // H/I
+    rateLeadsKlikCta: col(metaRow,8)/col(metaRow,9),     // I/J
+    rateKlikCtaLpView: col(metaRow,9)/col(metaRow,10),   // J/K
+    rateLpViewKlikCtr: col(metaRow,10)/col(metaRow,11),  // K/L
+    rateKlikCtrImpression: col(metaRow,11)/col(metaRow,12), // L/M
+    cpm: col(metaRow,13),
+  };
+
+  function parseFU(row){
+    return {
+      hariAktif: col(row,1),
+      rataNilaiProyek: col(row,5),
+      rateDealSurvey: col(row,6)/col(row,7),      // G/H
+      rateSurveyLeadsRespon: col(row,7)/col(row,8), // H/I
+      rateLeadsResponLeadsFu: col(row,8)/col(row,9), // I/J
+    };
+  }
+
+  return {
+    meta: meta,
+    database: parseFU(dbRow),
+    repeat: parseFU(repRow),
+  };
+}
+
+// ══════════════════════════════════════════════════════
+// KALKULATOR A — Omzet Target → Budget (mundur dari Deal ke Impression)
+// ══════════════════════════════════════════════════════
+function calcA(omzetTarget){
+  var m = RATES.meta;
+  var deal = omzetTarget / m.rataNilaiProyek;
+  var survey = deal / m.rateDealSurvey;
+  var leads = survey / m.rateSurveyLeads;
+  var klikCta = leads / m.rateLeadsKlikCta;
+  var lpView = klikCta / m.rateKlikCtaLpView;
+  var klikCtr = lpView / m.rateLpViewKlikCtr;
+  var impression = klikCtr / m.rateKlikCtrImpression;
+  var budgetTotal = impression * m.cpm / 1000;
+  var budgetHarian = budgetTotal / m.hariAktif;
+  return {deal,survey,leads,klikCta,lpView,klikCtr,impression,budgetTotal,budgetHarian};
+}
+
+// ══════════════════════════════════════════════════════
+// KALKULATOR B — Budget Total → Omzet Potensial (maju dari Impression ke Deal)
+// ══════════════════════════════════════════════════════
+function calcB(budgetTotal){
+  var m = RATES.meta;
+  var impression = budgetTotal / m.cpm * 1000;
+  var klikCtr = impression * m.rateKlikCtrImpression;
+  var lpView = klikCtr * m.rateLpViewKlikCtr;
+  var klikCta = lpView * m.rateKlikCtaLpView;
+  var leads = klikCta * m.rateLeadsKlikCta;
+  var survey = leads * m.rateSurveyLeads;
+  var deal = survey * m.rateDealSurvey;
+  var omzet = deal * m.rataNilaiProyek;
+  var budgetHarian = budgetTotal / m.hariAktif;
+  return {impression,klikCtr,lpView,klikCta,leads,survey,deal,omzet,budgetHarian};
+}
+
+// ══════════════════════════════════════════════════════
+// KALKULATOR C — Jumlah Leads (Database/Repeat) → Omzet Potensial
+// ══════════════════════════════════════════════════════
+function calcC(jumlahLeads, tipe){
+  var r = tipe==='repeat' ? RATES.repeat : RATES.database;
+  var leadsRespon = jumlahLeads * r.rateLeadsResponLeadsFu;
+  var survey = leadsRespon * r.rateSurveyLeadsRespon;
+  var deal = survey * r.rateDealSurvey;
+  var omzet = deal * r.rataNilaiProyek;
+  return {leadsRespon,survey,deal,omzet};
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER UI
+// ══════════════════════════════════════════════════════
+function renderApp(){
+  document.getElementById('content').innerHTML = `
+    <div class="tabs">
+      <div class="tab-btn active" data-tab="a" onclick="switchTab('a')">🎯 Omzet<br>→ Budget</div>
+      <div class="tab-btn" data-tab="b" onclick="switchTab('b')">💰 Budget<br>→ Omzet</div>
+      <div class="tab-btn" data-tab="c" onclick="switchTab('c')">📇 Leads<br>→ Omzet</div>
+    </div>
+
+    <div class="tab-panel active" data-panel="a">
+      <div class="card">
+        <div class="card-title">Target Omzet → Budget yang Dibutuhin</div>
+        <div class="card-desc">Mau dapet omzet sekian, butuh budget iklan Meta Ads berapa? Lengkap sama breakdown funnel-nya.</div>
+        <div class="form-row">
+          <label>Target Omzet (Rp)</label>
+          <input type="text" inputmode="numeric" id="input-a" placeholder="150.000.000" oninput="formatRupiah(this)">
+        </div>
+        <button class="btn btn-primary" onclick="runCalcA()">Hitung Budget</button>
+        <div class="result-box" id="result-a"></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-panel="b">
+      <div class="card">
+        <div class="card-title">Budget Total → Omzet Potensial</div>
+        <div class="card-desc">Punya budget sekian buat Meta Ads, idealnya bisa ngasilin omzet berapa?</div>
+        <div class="form-row">
+          <label>Budget Total (Rp)</label>
+          <input type="text" inputmode="numeric" id="input-b" placeholder="10.000.000" oninput="formatRupiah(this)">
+        </div>
+        <button class="btn btn-primary" onclick="runCalcB()">Hitung Omzet Potensial</button>
+        <div class="result-box" id="result-b"></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-panel="c">
+      <div class="card">
+        <div class="card-title">Leads yang Ada → Omzet Potensial</div>
+        <div class="card-desc">Punya database/repeat customer sekian, bisa dilikuidasi jadi omzet berapa?</div>
+        <div class="form-row">
+          <label>Jumlah Leads</label>
+          <input type="number" inputmode="numeric" min="0" id="input-c" placeholder="200">
+        </div>
+        <div class="form-row">
+          <label>Tipe Leads</label>
+          <select id="input-c-tipe">
+            <option value="database">Follow Up Database (rate lebih rendah)</option>
+            <option value="repeat">Repeat Customer (rate lebih tinggi)</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="runCalcC()">Hitung Omzet Potensial</button>
+        <div class="result-box" id="result-c"></div>
+      </div>
+    </div>
+  `;
+}
+
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(function(el){
+    el.classList.toggle('active', el.dataset.tab===tab);
+  });
+  document.querySelectorAll('.tab-panel').forEach(function(el){
+    el.classList.toggle('active', el.dataset.panel===tab);
+  });
+}
+
+function formatRupiah(el){
+  const raw=el.value.replace(/\D/g,'');
+  el.value=raw?Number(raw).toLocaleString('id-ID'):'';
+}
+function numRupiah(id){
+  const raw=document.getElementById(id).value.replace(/\D/g,'');
+  return raw?+raw:0;
+}
+
+function runCalcA(){
+  const omzet = numRupiah('input-a');
+  if(omzet<=0){ return; }
+  const r = calcA(omzet);
+  document.getElementById('result-a').innerHTML = `
+    <div class="result-hero">
+      <div class="lbl">Budget Total Dibutuhin</div>
+      <div class="val">${fmt(r.budgetTotal)}</div>
+      <div class="sub">${fmt(r.budgetHarian)} / hari · ${RATES.meta.hariAktif} hari aktif</div>
+    </div>
+    <div class="funnel-step"><span class="step-lbl">Impression</span><span class="step-val">${fmtNum(r.impression)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Klik / CTR</span><span class="step-val">${fmtNum(r.klikCtr)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">LP View</span><span class="step-val">${fmtNum(r.lpView)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Klik CTA</span><span class="step-val">${fmtNum(r.klikCta)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Leads Masuk</span><span class="step-val">${fmtNum(r.leads)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Closing Survey</span><span class="step-val">${fmtNum(r.survey)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Closing Deal</span><span class="step-val">${fmtNum(r.deal)}</span></div>
+  `;
+  document.getElementById('result-a').classList.add('show');
+}
+
+function runCalcB(){
+  const budget = numRupiah('input-b');
+  if(budget<=0){ return; }
+  const r = calcB(budget);
+  document.getElementById('result-b').innerHTML = `
+    <div class="result-hero">
+      <div class="lbl">Omzet Potensial</div>
+      <div class="val">${fmt(r.omzet)}</div>
+      <div class="sub">${fmtNum(r.deal)} Deal · ${fmt(r.budgetHarian)}/hari selama ${RATES.meta.hariAktif} hari</div>
+    </div>
+    <div class="funnel-step"><span class="step-lbl">Impression</span><span class="step-val">${fmtNum(r.impression)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Klik / CTR</span><span class="step-val">${fmtNum(r.klikCtr)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">LP View</span><span class="step-val">${fmtNum(r.lpView)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Klik CTA</span><span class="step-val">${fmtNum(r.klikCta)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Leads Masuk</span><span class="step-val">${fmtNum(r.leads)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Closing Survey</span><span class="step-val">${fmtNum(r.survey)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Closing Deal</span><span class="step-val">${fmtNum(r.deal)}</span></div>
+  `;
+  document.getElementById('result-b').classList.add('show');
+}
+
+function runCalcC(){
+  const leads = +document.getElementById('input-c').value || 0;
+  const tipe = document.getElementById('input-c-tipe').value;
+  if(leads<=0){ return; }
+  const r = calcC(leads, tipe);
+  const r2 = RATES[tipe==='repeat'?'repeat':'database'];
+  document.getElementById('result-c').innerHTML = `
+    <div class="result-hero">
+      <div class="lbl">Omzet Potensial</div>
+      <div class="val">${fmt(r.omzet)}</div>
+      <div class="sub">${fmtNum(r.deal)} Deal dari ${leads.toLocaleString('id-ID')} leads (${tipe==='repeat'?'Repeat':'Database'})</div>
+    </div>
+    <div class="funnel-step"><span class="step-lbl">Jumlah Leads</span><span class="step-val">${leads.toLocaleString('id-ID')}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Leads Respon</span><span class="step-val">${fmtNum(r.leadsRespon)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Closing Survey</span><span class="step-val">${fmtNum(r.survey)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Closing Deal</span><span class="step-val">${fmtNum(r.deal)}</span></div>
+    <div class="rate-note">Rate dipakai: Leads Respon ${(r2.rateLeadsResponLeadsFu*100).toFixed(1)}% dari total leads, Closing Survey ${(r2.rateSurveyLeadsRespon*100).toFixed(1)}% dari yang respon, Closing Deal ${(r2.rateDealSurvey*100).toFixed(1)}% dari Survey.</div>
+  `;
+  document.getElementById('result-c').classList.add('show');
+}
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+gviz().then(function(table){
+  const rows = parseTable(table);
+  RATES = deriveRates(rows);
+  console.log('[Rates]', RATES);
+  renderApp();
+}).catch(function(err){
+  document.getElementById('content').innerHTML = '<div class="err-box">⚠️ Gagal ambil data rate dari sheet.<br>Cek koneksi internet, atau sheet-nya mungkin berubah struktur.<br><span style="font-size:9px">'+err+'</span></div>';
+});
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('./sw.js')
+      .then(function(r){console.log('[SW] OK',r.scope);})
+      .catch(function(e){console.warn('[SW]',e);});
+  });
+}
+</script>
+</body>
+</html>
