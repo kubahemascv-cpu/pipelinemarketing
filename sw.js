@@ -1,5 +1,5 @@
 // SW Kalkulator Funnel & Budget
-const CACHE = 'funnelcalc-v1';
+const CACHE = 'funnelcalc-v2';
 
 self.addEventListener('install', function (e) {
   e.waitUntil(

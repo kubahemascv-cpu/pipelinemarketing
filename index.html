@@ -126,14 +126,30 @@ function parseTable(table){
 // ══════════════════════════════════════════════════════
 var RATES = null;
 
-function deriveRates(rows){
-  // Baris di-index dari 0. Baris 2 di sheet (Meta Ads) = index 1.
-  // Baris 6 (FU Database) = index 5. Baris 7 (Repeat) = index 6.
-  function col(row,i){ return parseNumStr(row[i]); }
+function findRowByChannel(rows, keyword){
+  // GViz suka "loncatin" baris kosong, jadi index array BUKAN patokan
+  // yang bisa dipercaya buat nomor baris di sheet aslinya (udah
+  // berkali-kali kejadian di app lain). Jadi dicari dari ISI kolom A
+  // (nama channel), bukan posisi tetap.
+  for(var i=0;i<rows.length;i++){
+    var label = String(rows[i][0]||'').toLowerCase().trim();
+    if(label.includes(keyword)) return rows[i];
+  }
+  return null;
+}
 
-  var metaRow = rows[1]; // Meta Ads
-  var dbRow = rows[5];   // Follow Up Database
-  var repRow = rows[6];  // Repeat
+function deriveRates(rows){
+  function col(row,i){ return row ? parseNumStr(row[i]) : 0; }
+
+  var metaRow = findRowByChannel(rows, 'meta ads');
+  var dbRow = findRowByChannel(rows, 'follow up database');
+  var repRow = findRowByChannel(rows, 'repeat');
+
+  console.log('[Pipeline Marketing] Baris ditemukan — Meta Ads:', metaRow, '| FU Database:', dbRow, '| Repeat:', repRow);
+
+  if(!metaRow || !dbRow || !repRow){
+    throw new Error('Gak nemu baris channel yang dicari di sheet (Meta Ads/Follow Up Database/Repeat). Cek apakah nama channel di kolom A masih sama persis.');
+  }
 
   var meta = {
     hariAktif: col(metaRow,1),
