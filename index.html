@@ -410,7 +410,8 @@ function renderApp(){
       <div class="tab-btn active" data-tab="a" onclick="switchTab('a')">💰 Omzet<br>→ Budget</div>
       <div class="tab-btn" data-tab="b" onclick="switchTab('b')">📈 Budget<br>→ Omzet</div>
       <div class="tab-btn" data-tab="c" onclick="switchTab('c')">📇 Leads<br>→ Omzet</div>
-      <div class="tab-btn" data-tab="d" onclick="switchTab('d')">🔍 Kontrol<br>Aktual</div>
+      <div class="tab-btn" data-tab="d" onclick="switchTab('d')">🔍 Kontrol<br>Meta Ads</div>
+      <div class="tab-btn" data-tab="e" onclick="switchTab('e')">📞 Kontrol<br>Follow Up</div>
     </div>
 
     <div class="tab-panel" data-panel="target">
@@ -494,7 +495,7 @@ function renderApp(){
 
     <div class="tab-panel" data-panel="d">
       <div class="card">
-        <div class="card-title">Kontrol Aktual — Rencana vs Kenyataan</div>
+        <div class="card-title">Kontrol Aktual Meta Ads — Rencana vs Kenyataan</div>
         <div class="card-desc">Isi angka AKTUAL hasil campaign (periode bebas, gak perlu per-hari). App bandingin tiap tahap ke rate IDEAL dari Pipeline Marketing, kasih tau tahap mana yang paling "bocor".</div>
         <div class="form-row"><label>Impression</label><input type="text" inputmode="numeric" id="input-d-impression" placeholder="0" oninput="formatRupiah(this)"></div>
         <div class="form-row"><label>Klik / CTR</label><input type="text" inputmode="numeric" id="input-d-klikctr" placeholder="0" oninput="formatRupiah(this)"></div>
@@ -505,6 +506,27 @@ function renderApp(){
         <div class="form-row"><label>Closing Deal</label><input type="text" inputmode="numeric" id="input-d-deal" placeholder="0" oninput="formatRupiah(this)"></div>
         <button class="btn btn-primary" onclick="runCalcD()">Analisa</button>
         <div class="result-box" id="result-d"></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-panel="e">
+      <div class="card">
+        <div class="card-title">Kontrol Aktual Follow Up — Rencana vs Kenyataan</div>
+        <div class="card-desc">Isi angka AKTUAL hasil follow up (periode bebas). App bandingin ke rate IDEAL channel yang dipilih, kasih tau tahap mana yang paling "bocor" dari sisi disiplin & kualitas follow up.</div>
+        <div class="form-row">
+          <label>Tipe Channel</label>
+          <select id="input-e-tipe">
+            <option value="database">Follow Up Database</option>
+            <option value="repeat">Repeat Customer</option>
+            <option value="bulanini">Follow Up Bulan Ini (Warm/Cold dari Meta Ads)</option>
+          </select>
+        </div>
+        <div class="form-row"><label>Jumlah Leads</label><input type="text" inputmode="numeric" id="input-e-leads" placeholder="0" oninput="formatRupiah(this)"></div>
+        <div class="form-row"><label>Leads Respon</label><input type="text" inputmode="numeric" id="input-e-respon" placeholder="0" oninput="formatRupiah(this)"></div>
+        <div class="form-row"><label>Closing Survey</label><input type="text" inputmode="numeric" id="input-e-survey" placeholder="0" oninput="formatRupiah(this)"></div>
+        <div class="form-row"><label>Closing Deal</label><input type="text" inputmode="numeric" id="input-e-deal" placeholder="0" oninput="formatRupiah(this)"></div>
+        <button class="btn btn-primary" onclick="runCalcE()">Analisa</button>
+        <div class="result-box" id="result-e"></div>
       </div>
     </div>
   `;
@@ -751,6 +773,108 @@ function runCalcD(){
 
   document.getElementById('result-d').innerHTML = rowsHTML + advisorHTML;
   document.getElementById('result-d').classList.add('show');
+}
+
+// ── PLAYBOOK SALES EXPERT — buat 3 tahap funnel Follow Up (Database/
+// Repeat/Bulan Ini). Konteksnya beda dari Meta Ads: ini soal DISIPLIN
+// OUTBOUND & RELATIONSHIP, bukan soal iklan/landing page.
+const FU_ACTION_PLAYBOOK = {
+  'Jumlah Leads → Leads Respon': {
+    kategori: 'Masalah Cara & Waktu Follow Up',
+    diagnosis: 'Leads dihubungi tapi gak direspon — biasanya soal TIMING atau PENDEKATAN yang kurang pas, bukan soal kualitas leads-nya.',
+    actions: [
+      'Cek jam follow up — coba variasi pagi/siang/sore, hindari jam sibuk orang kerja',
+      'Review pesan pembuka — personal (sebut nama/riwayat) atau template generik?',
+      'Pastikan SOP follow up H+1/H+3/H+7 beneran dijalankan, bukan cuma sekali coba',
+      'Coba ganti channel — kalau WA gak dibales, coba telpon langsung'
+    ]
+  },
+  'Leads Respon → Closing Survey': {
+    kategori: 'Masalah Kualifikasi & Penggalian Kebutuhan',
+    diagnosis: 'Orang udah respon, tapi gak lanjut ke tahap serius — pertanda kebutuhan belum tergali atau penawaran awal kurang nyambung.',
+    actions: [
+      'Gali kebutuhan lebih dalam — jangan buru-buru nawarin sebelum ngerti maunya apa',
+      'Review penawaran awal — udah relevan sama histori/kebutuhan mereka?',
+      'Cek ulang kualitas database — apakah leads ini emang masih relevan/berminat?',
+      'Follow up kedua kalau respon pertama dingin — jangan nyerah di 1 kali chat'
+    ]
+  },
+  'Closing Survey → Closing Deal': {
+    kategori: 'Masalah Closing & Trust',
+    diagnosis: 'Udah sampai tahap serius, tapi gagal closing — di channel Database/Repeat ini biasanya soal TRUST dan penawaran yang kurang spesial.',
+    actions: [
+      'Review handling keberatan — harga, waktu, atau kebutuhan yang berubah?',
+      'Siapkan penawaran khusus buat database/repeat (loyalty, diskon returning customer)',
+      'Cek kecepatan closing — ada gak kompetitor yang keduluan follow up mereka?',
+      'Evaluasi relationship — apakah komunikasi sebelumnya ninggalin kesan baik?'
+    ]
+  },
+};
+
+function runCalcE(){
+  const tipe = document.getElementById('input-e-tipe').value;
+  const leads = numRupiah('input-e-leads');
+  const respon = numRupiah('input-e-respon');
+  const survey = numRupiah('input-e-survey');
+  const deal = numRupiah('input-e-deal');
+
+  const r = rateForTipe(tipe);
+  const steps = [
+    {label:'Jumlah Leads → Leads Respon', actual: leads>0?respon/leads:null, ideal: r.rateLeadsResponLeadsFu, aVal:respon, bVal:leads, aLbl:'Leads Respon', bLbl:'Jumlah Leads'},
+    {label:'Leads Respon → Closing Survey', actual: respon>0?survey/respon:null, ideal: r.rateSurveyLeadsRespon, aVal:survey, bVal:respon, aLbl:'Closing Survey', bLbl:'Leads Respon'},
+    {label:'Closing Survey → Closing Deal', actual: survey>0?deal/survey:null, ideal: r.rateDealSurvey, aVal:deal, bVal:survey, aLbl:'Closing Deal', bLbl:'Closing Survey'},
+  ];
+
+  steps.forEach(function(s){
+    s.ratio = (s.actual!==null && s.ideal>0) ? s.actual/s.ideal : null;
+    s.cls = classifyRatio(s.ratio);
+  });
+
+  const rowsHTML = steps.map(function(s){
+    return `
+      <div class="compare-row">
+        <div class="compare-hd">
+          <span class="compare-lbl">${s.label}</span>
+          <span class="compare-badge ${s.cls||'warn'}">${badgeText(s.ratio)}</span>
+        </div>
+        <div class="compare-nums">Aktual: <b>${(s.actual!==null?pct1(s.actual):'—')}</b> vs Ideal: <b>${pct1(s.ideal)}</b> (${s.bVal.toLocaleString('id-ID')} ${s.bLbl} → ${s.aVal.toLocaleString('id-ID')} ${s.aLbl})</div>
+      </div>
+    `;
+  }).join('');
+
+  const redSteps = steps.filter(function(s){ return s.cls==='bad'; });
+  var advisorHTML = '';
+  if(redSteps.length){
+    advisorHTML = `
+      <div class="advisor-section">
+        <div class="advisor-section-title">📞 Sales Management Expert Advisor — Action Plan</div>
+        <div class="advisor-section-sub">${redSteps.length} titik butuh perbaikan di ${tipeLabel(tipe)}. Fokus ke yang paling dekat closing duluan.</div>
+        ${redSteps.map(function(s){
+          const pb = FU_ACTION_PLAYBOOK[s.label];
+          return `
+            <div class="leak-box">
+              <div class="leak-title">🚨 ${s.label} — ${badgeText(s.ratio)}</div>
+              <div class="leak-kategori">${pb.kategori}</div>
+              <div class="leak-body">${pb.diagnosis}</div>
+              <div class="leak-actions">
+                ${pb.actions.map(function(a){ return `<div class="leak-action-item">✓ ${a}</div>`; }).join('')}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  } else {
+    advisorHTML = `
+      <div class="leak-box good">
+        <div class="leak-title">✅ Semua Tahap Sehat</div>
+        <div class="leak-body">Gak ada titik yang di bawah 60% dari rate ideal buat ${tipeLabel(tipe)}. Disiplin follow up kamu udah sesuai rencana — pertahankan.</div>
+      </div>
+    `;
+  }
+
+  document.getElementById('result-e').innerHTML = rowsHTML + advisorHTML;
+  document.getElementById('result-e').classList.add('show');
 }
 
 // ══════════════════════════════════════════════════════
