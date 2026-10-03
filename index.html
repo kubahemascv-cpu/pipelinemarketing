@@ -35,8 +35,8 @@ input,select,button{font-family:var(--font)}
 
 .wrap{max-width:640px;margin:0 auto;padding:18px 16px 60px}
 
-.tabs{display:flex;gap:7px;margin-bottom:18px;background:var(--card);padding:6px;border-radius:18px;box-shadow:var(--shd)}
-.tab-btn{flex:1;padding:11px 6px;border-radius:13px;background:transparent;border:none;font-size:10px;font-weight:700;color:var(--mut);text-align:center;cursor:pointer;line-height:1.4;transition:all .2s}
+.tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:18px;background:var(--card);padding:6px;border-radius:18px;box-shadow:var(--shd)}
+.tab-btn{padding:10px 4px;border-radius:12px;background:transparent;border:none;font-size:9.5px;font-weight:700;color:var(--mut);text-align:center;cursor:pointer;line-height:1.35;transition:all .2s}
 .tab-btn.active{background:linear-gradient(120deg,var(--pri),var(--pri2));color:#fff;box-shadow:0 4px 12px rgba(99,102,241,.35)}
 
 .tab-panel{display:none}
@@ -80,9 +80,27 @@ input,select,button{font-family:var(--font)}
 .compare-badge.bad{background:var(--red-l);color:var(--red)}
 .compare-nums{font-size:10px;color:var(--mut)}
 .compare-nums b{color:var(--txt)}
-.leak-box{background:linear-gradient(135deg,var(--red),#FB7185);border-radius:16px;padding:16px;margin-top:14px;box-shadow:0 6px 16px rgba(244,63,94,.25)}
-.leak-box .leak-title{font-size:12.5px;font-weight:800;color:#fff;margin-bottom:5px}
+.advisor-section{margin-top:16px}
+.advisor-section-title{font-size:13px;font-weight:800;color:var(--txt);margin-bottom:3px}
+.advisor-section-sub{font-size:10.5px;color:var(--mut);margin-bottom:12px;line-height:1.6}
+
+.leak-box{background:linear-gradient(135deg,var(--red),#FB7185);border-radius:16px;padding:16px;margin-top:12px;box-shadow:0 6px 16px rgba(244,63,94,.25)}
+.leak-box.good{background:linear-gradient(135deg,var(--grn),#34D399);box-shadow:0 6px 16px rgba(16,185,129,.25)}
+.leak-box .leak-title{font-size:12.5px;font-weight:800;color:#fff;margin-bottom:4px}
+.leak-box .leak-kategori{font-size:10px;font-weight:700;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px}
 .leak-box .leak-body{font-size:11px;color:rgba(255,255,255,.92);line-height:1.65}
+.leak-box .leak-actions{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.25)}
+.leak-box .leak-action-item{font-size:10.5px;color:#fff;line-height:1.8;font-weight:500}
+
+.sum-indicator{font-size:11px;font-weight:700;text-align:center;padding:10px;border-radius:12px;background:var(--bg);color:var(--mut)}
+.sum-indicator.good{background:var(--grn-l);color:var(--grn)}
+.sum-indicator.warn{background:var(--amb-l);color:var(--amb)}
+
+.target-ideal-box{background:linear-gradient(135deg,var(--pri),var(--pri2));border-radius:16px;padding:14px 16px;margin-bottom:16px;box-shadow:0 6px 16px rgba(99,102,241,.25)}
+.target-ideal-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.03em}
+.target-ideal-val{font-size:20px;font-weight:800;color:#fff;margin-top:4px}
+.target-ideal-sub{font-size:10.5px;color:rgba(255,255,255,.85);margin-top:3px}
+.btn-mini{margin-top:10px;padding:8px 14px;border-radius:10px;border:none;background:rgba(255,255,255,.2);color:#fff;font-family:var(--font);font-size:10.5px;font-weight:700;cursor:pointer}
 
 .loading{text-align:center;padding:50px 20px;color:var(--mut);font-size:12px}
 .err-box{text-align:center;padding:30px 20px;color:var(--red);font-size:11.5px;line-height:1.6;background:var(--red-l);border-radius:16px;margin:0 4px}
@@ -161,11 +179,12 @@ function deriveRates(rows){
   var metaRow = findRowByChannel(rows, 'meta ads');
   var dbRow = findRowByChannel(rows, 'follow up database');
   var repRow = findRowByChannel(rows, 'repeat');
+  var bulanIniRow = findRowByChannel(rows, 'bulan ini');
 
-  console.log('[Pipeline Marketing] Baris ditemukan — Meta Ads:', metaRow, '| FU Database:', dbRow, '| Repeat:', repRow);
+  console.log('[Pipeline Marketing] Baris ditemukan — Meta Ads:', metaRow, '| FU Database:', dbRow, '| Repeat:', repRow, '| FU Bulan Ini:', bulanIniRow);
 
-  if(!metaRow || !dbRow || !repRow){
-    throw new Error('Gak nemu baris channel yang dicari di sheet (Meta Ads/Follow Up Database/Repeat). Cek apakah nama channel di kolom A masih sama persis.');
+  if(!metaRow || !dbRow || !repRow || !bulanIniRow){
+    throw new Error('Gak nemu baris channel yang dicari di sheet (Meta Ads/Follow Up Database/Repeat/Bulan ini). Cek apakah nama channel di kolom A masih sama persis.');
   }
 
   var meta = {
@@ -194,6 +213,7 @@ function deriveRates(rows){
     meta: meta,
     database: parseFU(dbRow),
     repeat: parseFU(repRow),
+    bulanIni: parseFU(bulanIniRow),
   };
 }
 
@@ -234,8 +254,19 @@ function calcB(budgetTotal){
 // ══════════════════════════════════════════════════════
 // KALKULATOR C — Jumlah Leads (Database/Repeat) → Omzet Potensial
 // ══════════════════════════════════════════════════════
+function rateForTipe(tipe){
+  if(tipe==='repeat') return RATES.repeat;
+  if(tipe==='bulanini') return RATES.bulanIni;
+  return RATES.database;
+}
+function tipeLabel(tipe){
+  if(tipe==='repeat') return 'Repeat Customer';
+  if(tipe==='bulanini') return 'Follow Up Bulan Ini';
+  return 'Follow Up Database';
+}
+
 function calcC(jumlahLeads, tipe){
-  var r = tipe==='repeat' ? RATES.repeat : RATES.database;
+  var r = rateForTipe(tipe);
   var leadsRespon = jumlahLeads * r.rateLeadsResponLeadsFu;
   var survey = leadsRespon * r.rateSurveyLeadsRespon;
   var deal = survey * r.rateDealSurvey;
@@ -246,19 +277,177 @@ function calcC(jumlahLeads, tipe){
 // ══════════════════════════════════════════════════════
 // RENDER UI
 // ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+// TARGET ALOKASI — disimpen di localStorage, dipakai Tab A & Tab C
+// buat nunjukin "Target Ideal" otomatis.
+// ══════════════════════════════════════════════════════
+function updateTargetPreview(){
+  const pMeta = +document.getElementById('input-target-meta').value || 0;
+  const pDb = +document.getElementById('input-target-database').value || 0;
+  const pRep = +document.getElementById('input-target-repeat').value || 0;
+  const pBulan = +document.getElementById('input-target-bulanini').value || 0;
+  const total = pMeta+pDb+pRep+pBulan;
+  const el = document.getElementById('target-sum-indicator');
+  el.textContent = 'Total: '+total+'%'+(total===100?' ✅ pas':total>100?' ⚠️ kelebihan '+(total-100)+'%':' ⚠️ kurang '+(100-total)+'%');
+  el.className = 'sum-indicator '+(total===100?'good':'warn');
+}
+
+function getTargetAlokasi(){
+  try{
+    const raw = localStorage.getItem('funnelcalc_target_alokasi');
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+
+function saveTargetAlokasi(){
+  const omzet = numRupiah('input-target-omzet');
+  const pMeta = +document.getElementById('input-target-meta').value || 0;
+  const pDb = +document.getElementById('input-target-database').value || 0;
+  const pRep = +document.getElementById('input-target-repeat').value || 0;
+  const pBulan = +document.getElementById('input-target-bulanini').value || 0;
+  const total = pMeta+pDb+pRep+pBulan;
+
+  if(omzet<=0){
+    document.getElementById('result-target').innerHTML = '<div class="err-box">Isi Target Omzet Perusahaan dulu.</div>';
+    document.getElementById('result-target').classList.add('show');
+    return;
+  }
+  if(total!==100){
+    document.getElementById('result-target').innerHTML = '<div class="err-box">Total persentase harus PAS 100% (sekarang '+total+'%). Sesuaikan dulu sebelum disimpan.</div>';
+    document.getElementById('result-target').classList.add('show');
+    return;
+  }
+
+  const alokasi = {omzet,pMeta,pDb,pRep,pBulan};
+  localStorage.setItem('funnelcalc_target_alokasi', JSON.stringify(alokasi));
+  renderTargetResult(alokasi);
+  renderTargetIdealBadgeA();
+  renderTargetIdealBadgeC();
+}
+
+function renderTargetResult(alokasi){
+  const omzetMeta = alokasi.omzet*alokasi.pMeta/100;
+  const omzetDb = alokasi.omzet*alokasi.pDb/100;
+  const omzetRep = alokasi.omzet*alokasi.pRep/100;
+  const omzetBulan = alokasi.omzet*alokasi.pBulan/100;
+  document.getElementById('result-target').innerHTML = `
+    <div class="result-hero">
+      <div class="lbl">✅ Tersimpan</div>
+      <div class="val">${fmt(alokasi.omzet)}</div>
+      <div class="sub">Total Target Omzet Perusahaan</div>
+    </div>
+    <div class="funnel-step"><span class="step-lbl">Meta Ads (${alokasi.pMeta}%)</span><span class="step-val">${fmt(omzetMeta)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Follow Up Database (${alokasi.pDb}%)</span><span class="step-val">${fmt(omzetDb)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Repeat Customer (${alokasi.pRep}%)</span><span class="step-val">${fmt(omzetRep)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Follow Up Bulan Ini (${alokasi.pBulan}%)</span><span class="step-val">${fmt(omzetBulan)}</span></div>
+    <div class="rate-note">Angka ini sekarang otomatis muncul di tab "Omzet→Budget" dan "Leads→Omzet".</div>
+  `;
+  document.getElementById('result-target').classList.add('show');
+}
+
+function loadTargetAlokasiToForm(){
+  const alokasi = getTargetAlokasi();
+  if(!alokasi) return;
+  document.getElementById('input-target-omzet').value = Math.round(alokasi.omzet).toLocaleString('id-ID');
+  document.getElementById('input-target-meta').value = alokasi.pMeta;
+  document.getElementById('input-target-database').value = alokasi.pDb;
+  document.getElementById('input-target-repeat').value = alokasi.pRep;
+  document.getElementById('input-target-bulanini').value = alokasi.pBulan;
+  updateTargetPreview();
+  renderTargetResult(alokasi);
+}
+
+function renderTargetIdealBadgeA(){
+  const el = document.getElementById('target-ideal-a');
+  if(!el) return;
+  const alokasi = getTargetAlokasi();
+  if(!alokasi){ el.innerHTML=''; return; }
+  const omzetMeta = alokasi.omzet*alokasi.pMeta/100;
+  el.innerHTML = `
+    <div class="target-ideal-box">
+      <div class="target-ideal-lbl">🎯 Target Ideal Meta Ads (dari Target Alokasi)</div>
+      <div class="target-ideal-val">${fmt(omzetMeta)}</div>
+      <button class="btn-mini" onclick="applyTargetIdealA(${omzetMeta})">Pakai angka ini →</button>
+    </div>
+  `;
+}
+function applyTargetIdealA(omzet){
+  document.getElementById('input-a').value = Math.round(omzet).toLocaleString('id-ID');
+  runCalcA();
+}
+
+function renderTargetIdealBadgeC(){
+  const el = document.getElementById('target-ideal-c');
+  if(!el) return;
+  const alokasi = getTargetAlokasi();
+  if(!alokasi){ el.innerHTML=''; return; }
+  const tipe = document.getElementById('input-c-tipe').value;
+  const p = tipe==='repeat'?alokasi.pRep : tipe==='bulanini'?alokasi.pBulan : alokasi.pDb;
+  const omzetChannel = alokasi.omzet*p/100;
+  const r = rateForTipe(tipe);
+  const dealNeeded = omzetChannel/r.rataNilaiProyek;
+  const surveyNeeded = dealNeeded/r.rateDealSurvey;
+  const leadsResponNeeded = surveyNeeded/r.rateSurveyLeadsRespon;
+  const leadsNeeded = Math.ceil(leadsResponNeeded/r.rateLeadsResponLeadsFu);
+  el.innerHTML = `
+    <div class="target-ideal-box">
+      <div class="target-ideal-lbl">🎯 Target Ideal ${tipeLabel(tipe)} (dari Target Alokasi)</div>
+      <div class="target-ideal-val">${fmt(omzetChannel)}</div>
+      <div class="target-ideal-sub">Butuh ~${fmtNum(leadsNeeded)} leads buat capai target ini</div>
+      <button class="btn-mini" onclick="applyTargetIdealC(${leadsNeeded})">Pakai angka ini →</button>
+    </div>
+  `;
+}
+function applyTargetIdealC(leads){
+  document.getElementById('input-c').value = leads;
+  runCalcC();
+}
+
 function renderApp(){
   document.getElementById('content').innerHTML = `
     <div class="tabs">
-      <div class="tab-btn active" data-tab="a" onclick="switchTab('a')">🎯 Omzet<br>→ Budget</div>
-      <div class="tab-btn" data-tab="b" onclick="switchTab('b')">💰 Budget<br>→ Omzet</div>
+      <div class="tab-btn" data-tab="target" onclick="switchTab('target')">🎯 Target<br>Alokasi</div>
+      <div class="tab-btn active" data-tab="a" onclick="switchTab('a')">💰 Omzet<br>→ Budget</div>
+      <div class="tab-btn" data-tab="b" onclick="switchTab('b')">📈 Budget<br>→ Omzet</div>
       <div class="tab-btn" data-tab="c" onclick="switchTab('c')">📇 Leads<br>→ Omzet</div>
       <div class="tab-btn" data-tab="d" onclick="switchTab('d')">🔍 Kontrol<br>Aktual</div>
+    </div>
+
+    <div class="tab-panel" data-panel="target">
+      <div class="card">
+        <div class="card-title">Target Alokasi Channel</div>
+        <div class="card-desc">Isi Target Omzet Perusahaan + pembagian % ke 4 channel. Begitu disimpan, otomatis muncul jadi "Target Ideal" di tab Omzet→Budget dan Leads→Omzet — gak perlu input ulang.</div>
+        <div class="form-row">
+          <label>Target Omzet Perusahaan (Rp)</label>
+          <input type="text" inputmode="numeric" id="input-target-omzet" placeholder="250.000.000" oninput="formatRupiah(this);updateTargetPreview()">
+        </div>
+        <div class="form-row">
+          <label>% Meta Ads</label>
+          <input type="number" inputmode="numeric" min="0" max="100" id="input-target-meta" placeholder="50" oninput="updateTargetPreview()">
+        </div>
+        <div class="form-row">
+          <label>% Follow Up Database</label>
+          <input type="number" inputmode="numeric" min="0" max="100" id="input-target-database" placeholder="20" oninput="updateTargetPreview()">
+        </div>
+        <div class="form-row">
+          <label>% Repeat Customer</label>
+          <input type="number" inputmode="numeric" min="0" max="100" id="input-target-repeat" placeholder="20" oninput="updateTargetPreview()">
+        </div>
+        <div class="form-row">
+          <label>% Follow Up Bulan Ini</label>
+          <input type="number" inputmode="numeric" min="0" max="100" id="input-target-bulanini" placeholder="10" oninput="updateTargetPreview()">
+        </div>
+        <div class="sum-indicator" id="target-sum-indicator">Total: 0%</div>
+        <button class="btn btn-primary" onclick="saveTargetAlokasi()" style="margin-top:14px">💾 Simpan Target Alokasi</button>
+        <div class="result-box" id="result-target"></div>
+      </div>
     </div>
 
     <div class="tab-panel active" data-panel="a">
       <div class="card">
         <div class="card-title">Target Omzet → Budget yang Dibutuhin</div>
         <div class="card-desc">Mau dapet omzet sekian, butuh budget iklan Meta Ads berapa? Lengkap sama breakdown funnel-nya.</div>
+        <div id="target-ideal-a"></div>
         <div class="form-row">
           <label>Target Omzet (Rp)</label>
           <input type="text" inputmode="numeric" id="input-a" placeholder="150.000.000" oninput="formatRupiah(this)">
@@ -284,17 +473,19 @@ function renderApp(){
     <div class="tab-panel" data-panel="c">
       <div class="card">
         <div class="card-title">Leads yang Ada → Omzet Potensial</div>
-        <div class="card-desc">Punya database/repeat customer sekian, bisa dilikuidasi jadi omzet berapa?</div>
+        <div class="card-desc">Punya database/repeat/leads warm-cold bulan ini sekian, bisa dilikuidasi jadi omzet berapa?</div>
+        <div class="form-row">
+          <label>Tipe Leads</label>
+          <select id="input-c-tipe" onchange="renderTargetIdealBadgeC()">
+            <option value="database">Follow Up Database</option>
+            <option value="repeat">Repeat Customer</option>
+            <option value="bulanini">Follow Up Bulan Ini (Warm/Cold dari Meta Ads)</option>
+          </select>
+        </div>
+        <div id="target-ideal-c"></div>
         <div class="form-row">
           <label>Jumlah Leads</label>
           <input type="number" inputmode="numeric" min="0" id="input-c" placeholder="200">
-        </div>
-        <div class="form-row">
-          <label>Tipe Leads</label>
-          <select id="input-c-tipe">
-            <option value="database">Follow Up Database (rate lebih rendah)</option>
-            <option value="repeat">Repeat Customer (rate lebih tinggi)</option>
-          </select>
         </div>
         <button class="btn btn-primary" onclick="runCalcC()">Hitung Omzet Potensial</button>
         <div class="result-box" id="result-c"></div>
@@ -389,18 +580,18 @@ function runCalcC(){
   const tipe = document.getElementById('input-c-tipe').value;
   if(leads<=0){ return; }
   const r = calcC(leads, tipe);
-  const r2 = RATES[tipe==='repeat'?'repeat':'database'];
+  const r2 = rateForTipe(tipe);
   document.getElementById('result-c').innerHTML = `
     <div class="result-hero">
       <div class="lbl">Omzet Potensial</div>
       <div class="val">${fmt(r.omzet)}</div>
-      <div class="sub">${fmtNum(r.deal)} Deal dari ${leads.toLocaleString('id-ID')} leads (${tipe==='repeat'?'Repeat':'Database'})</div>
+      <div class="sub">${fmtNum(r.deal)} Deal dari ${leads.toLocaleString('id-ID')} leads (${tipeLabel(tipe)})</div>
     </div>
     <div class="funnel-step"><span class="step-lbl">Jumlah Leads</span><span class="step-val">${leads.toLocaleString('id-ID')}</span></div>
     <div class="funnel-step"><span class="step-lbl">Leads Respon <span class="step-rate">(${pct1(r2.rateLeadsResponLeadsFu)} dari Jumlah Leads)</span></span><span class="step-val">${fmtNum(r.leadsRespon)}</span></div>
     <div class="funnel-step"><span class="step-lbl">Closing Survey <span class="step-rate">(${pct1(r2.rateSurveyLeadsRespon)} dari Leads Respon)</span></span><span class="step-val">${fmtNum(r.survey)}</span></div>
     <div class="funnel-step"><span class="step-lbl">Closing Deal <span class="step-rate">(${pct1(r2.rateDealSurvey)} dari Survey)</span></span><span class="step-val">${fmtNum(r.deal)}</span></div>
-    <div class="rate-note">Tipe: ${tipe==='repeat'?'Repeat Customer':'Follow Up Database'}. Semua rate diambil live dari sheet Pipeline Marketing.</div>
+    <div class="rate-note">Tipe: ${tipeLabel(tipe)}. Semua rate diambil live dari sheet Pipeline Marketing.</div>
   `;
   document.getElementById('result-c').classList.add('show');
 }
@@ -421,6 +612,73 @@ function badgeText(ratio){
   return Math.round(ratio*100)+'% dari ideal';
 }
 
+// ── PLAYBOOK EXPERT — diagnosa + action plan spesifik per titik
+// funnel. Ini disusun berdasarkan pola umum Meta Ads/landing page
+// funnel, BUKAN dari sheet Pipeline Marketing (sheet cuma punya rate
+// angka, bukan rekomendasi tindakan).
+const ACTION_PLAYBOOK = {
+  'Impression → Klik/CTR': {
+    kategori: 'Masalah Iklan (Creative & Targeting)',
+    diagnosis: 'Orang lihat iklannya tapi gak tergerak klik — biasanya creative kurang nyantol atau targeting kurang pas.',
+    actions: [
+      'Ganti hook 3 detik pertama di video/gambar iklan',
+      'Cek audience fatigue — udah berapa lama creative ini jalan tanpa diganti?',
+      'Test format baru: video vs carousel vs single image',
+      'Review ulang targeting — audience masih relevan sama produk?'
+    ]
+  },
+  'Klik/CTR → LP View': {
+    kategori: 'Masalah Teknis Landing Page',
+    diagnosis: 'Orang klik iklannya, tapi gak sampai kelihatan halamannya — ini paling sering soal teknis, bukan konten.',
+    actions: [
+      'Cek loading speed landing page (target di bawah 3 detik)',
+      'Pastikan link iklan gak ada yang broken/salah redirect',
+      'Tes buka dari HP langsung — mayoritas traffic iklan dari mobile',
+      'Cek ada gak pop-up/interstitial yang bikin orang kabur duluan'
+    ]
+  },
+  'LP View → Klik CTA': {
+    kategori: 'Masalah Copy & Desain Landing Page',
+    diagnosis: 'Orang udah lihat halamannya, tapi gak tergerak klik tombol — berarti pesannya belum meyakinkan.',
+    actions: [
+      'Perkuat headline — harus langsung jawab "apa untungnya buat saya?"',
+      'Bikin tombol CTA lebih menonjol (warna, ukuran, posisi)',
+      'Tambah social proof — testimoni, jumlah customer, rating',
+      'Kurangi elemen yang "bersaing" perhatian sama tombol CTA'
+    ]
+  },
+  'Klik CTA → Leads': {
+    kategori: 'Masalah Friksi di Langkah Terakhir',
+    diagnosis: 'Orang udah niat klik, tapi gagal/malas nyelesain langkah buat jadi leads beneran.',
+    actions: [
+      'Sederhanain form — makin dikit field wajib, makin bagus',
+      'Pastikan auto-reply WA/chat jalan otomatis, jangan bikin orang nunggu',
+      'Cek tombol WA langsung buka chat, bukan muter ke halaman lain dulu',
+      'Cari tau ada gak step tersembunyi yang bikin orang bingung'
+    ]
+  },
+  'Leads → Survey': {
+    kategori: 'Masalah Respon & Kapasitas CS',
+    diagnosis: 'Leads udah masuk, tapi gak sempat/gak maksimal di-follow — biasanya soal kecepatan atau kapasitas tim.',
+    actions: [
+      'Cek kecepatan respon pertama — target di bawah 5 menit',
+      'Review SOP follow up — ada leads yang kelewat gak ke-follow?',
+      'Cek kapasitas CS — jumlah leads udah ngelebihin kemampuan tim?',
+      'Pastikan semua leads ke-assign, gak ada yang nyangkut tanpa PIC'
+    ]
+  },
+  'Survey → Deal': {
+    kategori: 'Masalah Closing & Handling Keberatan',
+    diagnosis: 'Udah sampai tahap serius (survey), tapi gagal convert jadi transaksi — ini paling mahal buat dibiarkan.',
+    actions: [
+      'Review script closing — CS udah handle keberatan dengan baik?',
+      'Cek kompetitif harga — kalah bersaing sama kompetitor?',
+      'Evaluasi proses survey — informasinya udah lengkap & meyakinkan?',
+      'Cek Lost Reason paling sering — harga, lokasi, atau alasan lain?'
+    ]
+  },
+};
+
 function runCalcD(){
   const impression = numRupiah('input-d-impression');
   const klikCtr = numRupiah('input-d-klikctr');
@@ -440,11 +698,9 @@ function runCalcD(){
     {label:'Survey → Deal', actual: survey>0?deal/survey:null, ideal: m.rateDealSurvey, aVal:deal, bVal:survey, aLbl:'Deal', bLbl:'Survey'},
   ];
 
-  let worst = null;
   steps.forEach(function(s){
     s.ratio = (s.actual!==null && s.ideal>0) ? s.actual/s.ideal : null;
     s.cls = classifyRatio(s.ratio);
-    if(s.ratio!==null && (worst===null || s.ratio<worst.ratio)) worst=s;
   });
 
   const rowsHTML = steps.map(function(s){
@@ -459,14 +715,41 @@ function runCalcD(){
     `;
   }).join('');
 
-  const leakHTML = worst ? `
-    <div class="leak-box">
-      <div class="leak-title">⚠️ Paling Bocor: ${worst.label}</div>
-      <div class="leak-body">Aktual cuma ${badgeText(worst.ratio)} dibanding rate ideal (${pct1(worst.ideal)}). Ini tahap yang paling butuh perbaikan duluan — gak ada gunanya nambah budget atas (Impression) kalau bocornya di sini.</div>
-    </div>
-  ` : '';
+  // ── SEMUA titik MERAH dapet Action Plan sendiri-sendiri (bukan
+  // cuma 1 "paling bocor"), pakai playbook expert di atas.
+  const redSteps = steps.filter(function(s){ return s.cls==='bad'; });
 
-  document.getElementById('result-d').innerHTML = rowsHTML + leakHTML;
+  var advisorHTML = '';
+  if(redSteps.length){
+    advisorHTML = `
+      <div class="advisor-section">
+        <div class="advisor-section-title">🎯 Meta Ads Expert Advisor — Action Plan</div>
+        <div class="advisor-section-sub">${redSteps.length} titik butuh perbaikan segera. Urutin dari yang paling dekat ke closing (paling mahal kalau dibiarin).</div>
+        ${redSteps.map(function(s){
+          const pb = ACTION_PLAYBOOK[s.label];
+          return `
+            <div class="leak-box">
+              <div class="leak-title">🚨 ${s.label} — ${badgeText(s.ratio)}</div>
+              <div class="leak-kategori">${pb.kategori}</div>
+              <div class="leak-body">${pb.diagnosis}</div>
+              <div class="leak-actions">
+                ${pb.actions.map(function(a){ return `<div class="leak-action-item">✓ ${a}</div>`; }).join('')}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  } else {
+    advisorHTML = `
+      <div class="leak-box good">
+        <div class="leak-title">✅ Semua Tahap Sehat</div>
+        <div class="leak-body">Gak ada titik yang di bawah 60% dari rate ideal. Funnel kamu jalan sesuai rencana — pertahankan.</div>
+      </div>
+    `;
+  }
+
+  document.getElementById('result-d').innerHTML = rowsHTML + advisorHTML;
   document.getElementById('result-d').classList.add('show');
 }
 
@@ -478,6 +761,9 @@ gviz().then(function(table){
   RATES = deriveRates(rows);
   console.log('[Rates]', RATES);
   renderApp();
+  loadTargetAlokasiToForm();
+  renderTargetIdealBadgeA();
+  renderTargetIdealBadgeC();
 }).catch(function(err){
   document.getElementById('content').innerHTML = '<div class="err-box">⚠️ Gagal ambil data rate dari sheet.<br>Cek koneksi internet, atau sheet-nya mungkin berubah struktur.<br><span style="font-size:9px">'+err+'</span></div>';
 });
