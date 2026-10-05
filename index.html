@@ -124,6 +124,9 @@ input,select,button{font-family:var(--font)}
 .pass-badge.pass{background:var(--grn-l);color:var(--grn)}
 .pass-badge.fail{background:var(--red-l);color:var(--red)}
 
+.sample-warning{background:var(--amb-l);border:1.5px solid #FDE68A;border-radius:12px;padding:11px 13px;margin-bottom:14px;font-size:10.5px;color:#92400E;line-height:1.6;font-weight:600}
+.sample-badge{display:inline-block;font-size:8.5px;font-weight:800;padding:2px 7px;border-radius:20px;background:var(--amb-l);color:var(--amb);vertical-align:middle}
+
 .leaderboard-title{font-size:13px;font-weight:800;color:var(--txt);margin:18px 0 10px}
 .leaderboard-row{display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--card);border-radius:14px;margin-bottom:8px;box-shadow:var(--shd);border:1px solid var(--bdr);cursor:pointer}
 .leaderboard-rank{font-size:16px;font-weight:800;color:var(--mut);width:26px;flex-shrink:0;text-align:center}
@@ -584,6 +587,14 @@ function renderApp(){
           </div>
         </div>
         <div class="form-row">
+          <label>Impression <span class="hint">(buat cek validitas sample)</span></label>
+          <input type="text" inputmode="numeric" id="input-f-impression" placeholder="5.000" oninput="formatRupiah(this)">
+        </div>
+        <div class="form-row">
+          <label>Reach <span class="hint">(opsional)</span></label>
+          <input type="text" inputmode="numeric" id="input-f-reach" placeholder="3.500" oninput="formatRupiah(this)">
+        </div>
+        <div class="form-row">
           <label>CPM (Rp)</label>
           <input type="text" inputmode="numeric" id="input-f-cpm" placeholder="40.000" oninput="formatRupiah(this)">
         </div>
@@ -1025,6 +1036,12 @@ function computeAllScores(list){
 
 // Winner Result (tertinggi) & CPR (terendah) — ini metrik GOAL AKHIR,
 // gak masuk skor komposit, ditampilin head-to-head apa adanya.
+// Impression di bawah 1.000 = sample kecil, skornya bisa jadi "noise"
+// (kebetulan), bukan beneran mencerminkan performa creative.
+function isSampleKecil(c){
+  return c.impression!=null && c.impression<1000;
+}
+
 function computeWinners(list){
   const withResult = list.filter(function(c){return c.result!=null && c.result>0;});
   const withCpr = list.filter(function(c){return c.cpr!=null && c.cpr>0;});
@@ -1050,6 +1067,8 @@ function saveCreativesToStorage(list){
 
 function runCalcF(){
   const nama = document.getElementById('input-f-nama').value.trim();
+  const impression = numRupiah('input-f-impression') || null;
+  const reach = numRupiah('input-f-reach') || null;
   const cpm = numRupiah('input-f-cpm');
   const ctr = +document.getElementById('input-f-ctr').value || 0;
   const frekuensi = +document.getElementById('input-f-frekuensi').value || 0;
@@ -1061,7 +1080,7 @@ function runCalcF(){
   if(!nama){ document.getElementById('result-f').innerHTML='<div class="err-box">Isi Nama Creative dulu.</div>'; document.getElementById('result-f').classList.add('show'); return; }
   if(cpm<=0 || ctr<=0){ document.getElementById('result-f').innerHTML='<div class="err-box">Isi CPM dan CTR dulu.</div>'; document.getElementById('result-f').classList.add('show'); return; }
 
-  const data = {id:Date.now(), nama, tipe:CREATIVE_TIPE, cpm, ctr, frekuensi, hookRate, result, cpr};
+  const data = {id:Date.now(), nama, tipe:CREATIVE_TIPE, impression, reach, cpm, ctr, frekuensi, hookRate, result, cpr};
   const list = getCreatives();
   list.push(data);
   saveCreativesToStorage(list);
@@ -1080,6 +1099,12 @@ function renderScoreResult(scoredData, fullList){
       <div class="val">${scoredData.composite}<span>/100</span></div>
       <div class="sub">${scoredData.tipe==='video'?'🎬 Video':'🖼️ Image'} · Skor RELATIF (dibanding ${fullList.length} creative tersimpan)</div>
     </div>
+    ${isSampleKecil(scoredData) ? `<div class="sample-warning">⚠️ Sample Kecil — Impression cuma ${scoredData.impression.toLocaleString('id-ID')} (di bawah 1.000). Skor di bawah ini bisa jadi belum representatif, hati-hati ambil kesimpulan.</div>` : ''}
+    ${(scoredData.impression!=null || scoredData.reach!=null) ? `
+    <div class="score-section-lbl">Data Pendukung</div>
+    ${scoredData.impression!=null?`<div class="score-item"><span class="score-item-lbl">Impression</span><span class="score-item-raw" style="display:inline;margin-left:8px">${scoredData.impression.toLocaleString('id-ID')}</span></div>`:''}
+    ${scoredData.reach!=null?`<div class="score-item"><span class="score-item-lbl">Reach</span><span class="score-item-raw" style="display:inline;margin-left:8px">${scoredData.reach.toLocaleString('id-ID')}</span></div>`:''}
+    `:''}
     <div class="score-section-lbl">Lapisan 1 — Lolos KPI Tetap?</div>
     ${scoredData.scoreItems.filter(function(it){return it.pass!==null;}).map(function(it){
       return `<div class="score-item">
@@ -1122,7 +1147,7 @@ function renderLeaderboard(){
       <div class="leaderboard-row" onclick="viewCreativeDetail(${c.id})">
         <div class="leaderboard-rank ${i===0?'top':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)}</div>
         <div class="leaderboard-info">
-          <div class="leaderboard-name">${esc(c.nama)}</div>
+          <div class="leaderboard-name">${esc(c.nama)}${isSampleKecil(c)?' <span class="sample-badge">⚠️ Sample Kecil</span>':''}</div>
           <div class="leaderboard-meta">${c.tipe==='video'?'🎬':'🖼️'} Result: ${resultTxt} · CPR: ${cprTxt}</div>
         </div>
         <div class="leaderboard-score">${c.composite}</div>
