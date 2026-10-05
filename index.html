@@ -149,7 +149,8 @@ input,select,button{font-family:var(--font)}
    Mobile tetap menu di atas (gak diubah, cuma ditambah behavior baru
    buat layar lebar). ── */
 @media (min-width:900px){
-  .wrap{max-width:1140px;display:flex;align-items:flex-start;gap:28px;padding:28px 28px 60px}
+  .wrap{max-width:1140px;padding:28px 28px 60px}
+  #content{display:flex;align-items:flex-start;gap:28px}
   .tabs{display:flex;flex-direction:column;grid-template-columns:none;width:200px;flex-shrink:0;position:sticky;top:28px;gap:6px;padding:10px}
   .tab-btn{text-align:left;padding:13px 16px;font-size:12.5px;line-height:1.3}
   .tab-content-wrap{flex:1;min-width:0}
