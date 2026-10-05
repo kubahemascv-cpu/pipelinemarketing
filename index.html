@@ -2,1798 +2,1091 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Executive Marketing Dashboard — Toko</title>
-<meta name="theme-color" content="#C89B00">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Kalkulator Funnel & Budget</title>
+<meta name="theme-color" content="#6366F1">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="EXC Toko">
-<meta name="application-name" content="EXC Toko">
-<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-title" content="Kalkulator Funnel">
 <link rel="apple-touch-icon" href="icon-512.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --yl:#F5C518;--yl-d:#C89B00;--yl-l:#FFFBE6;--yl-b:#FFE082;
-  --ch:#1C1E26;--ch2:#252830;--ch3:#2D3142;
-  --bg:#F5F5F0;--bg2:#ECEAE3;--card:#FFFFFF;--card2:#F9F9F6;
-  --txt:#1C1E26;--txt2:#3A3D4A;--mut:#7A7E8A;--bdr:#E0DED6;
-  --grn:#16A34A;--grn-l:#F0FDF4;--red:#DC2626;--red-l:#FEF2F2;
-  --blue:#1877F2;--blue-l:#EFF6FF;
-  --shd:0 2px 12px rgba(0,0,0,.07);--shd2:0 6px 24px rgba(0,0,0,.11);
-  --font:'Poppins',-apple-system,sans-serif;--r:14px;
+  --bg:#F7F7FC;--card:#FFFFFF;--card2:#F3F1FF;--bdr:#ECEAF8;
+  --txt:#161A2B;--txt2:#484D64;--mut:#8B8FA3;
+  --pri:#6366F1;--pri2:#8B5CF6;--pri-d:#4F46E5;--pri-l:#EEF0FF;
+  --grn:#10B981;--grn-l:#ECFDF5;
+  --amb:#F59E0B;--amb-l:#FFFBEB;
+  --red:#F43F5E;--red-l:#FFF1F3;
+  --shd:0 4px 20px rgba(99,102,241,.08);
+  --shd-lg:0 8px 28px rgba(99,102,241,.14);
+  --font:'Poppins',-apple-system,sans-serif;
 }
-body.dark{
-  --bg:#13141A;--bg2:#1C1E26;--card:#1E2028;--card2:#252830;
-  --txt:#F0EFE8;--txt2:#C0BFB0;--mut:#6B6E7A;--bdr:#2D3040;
-  --shd:0 2px 12px rgba(0,0,0,.4);--shd2:0 6px 24px rgba(0,0,0,.5);
-}
-body{font-family:var(--font);background:var(--bg);color:var(--txt);min-height:100vh;transition:background .25s,color .25s}
+body{font-family:var(--font);background:var(--bg);color:var(--txt);min-height:100vh;-webkit-font-smoothing:antialiased}
+input,select,button{font-family:var(--font)}
 
-/* ── TOPBAR ── */
-.topbar{background:var(--ch);padding:10px 20px 0;position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.3)}
-body.dark .topbar{background:#0D0E12;border-bottom:1px solid var(--bdr)}
-.topbar-row1{display:flex;justify-content:space-between;align-items:center;padding-bottom:10px}
-.topbar-row2{display:flex;align-items:center;gap:8px;padding:8px 0 10px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.08)}
-.brand{display:flex;align-items:center;gap:12px}
-.brand-logo{width:36px;height:36px;border-radius:9px;background:var(--yl);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--ch);flex-shrink:0}
-.brand-name{font-size:14px;font-weight:700;color:#fff;line-height:1.2}
-.brand-sub{font-size:10px;color:rgba(255,255,255,.4);font-weight:400}
-.topbar-right{display:flex;align-items:center;gap:10px}
-.tbtn{height:34px;padding:0 14px;border-radius:8px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:rgba(255,255,255,.75);font-family:var(--font);font-size:11.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
-.tbtn:hover{border-color:var(--yl);color:var(--yl)}
-.tbtn.active{background:var(--yl);border-color:var(--yl);color:var(--ch)}
-.tbtn.spin svg{animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.month-sel{height:34px;padding:0 28px 0 10px;border-radius:8px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);font-family:var(--font);font-size:11.5px;font-weight:600;cursor:pointer;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,.6)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;outline:none}
-.month-now-lbl{height:34px;padding:0 12px;border-radius:8px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);font-family:var(--font);font-size:11.5px;font-weight:600;display:flex;align-items:center}
-.update-badge{font-size:10px;color:rgba(255,255,255,.35);white-space:nowrap}
+.topbar{background:linear-gradient(120deg,var(--pri),var(--pri2));padding:20px 18px 22px;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(99,102,241,.25)}
+.tb-title{font-size:15px;font-weight:800;color:#fff;letter-spacing:-.01em}
+.tb-sub{font-size:10.5px;color:rgba(255,255,255,.8);margin-top:2px;font-weight:500}
 
-/* ── LAYOUT ── */
-.main{max-width:1400px;margin:0 auto;padding:22px 24px 40px}
+.wrap{max-width:640px;margin:0 auto;padding:18px 16px 60px}
 
-/* ── SECTION LABEL ── */
-.slbl{display:block;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--mut);padding:22px 0 10px}
-.slbl:first-child{padding-top:0}
+.tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:18px;background:var(--card);padding:6px;border-radius:18px;box-shadow:var(--shd)}
+.tab-btn{padding:10px 4px;border-radius:12px;background:transparent;border:none;font-size:9.5px;font-weight:700;color:var(--mut);text-align:center;cursor:pointer;line-height:1.35;transition:all .2s}
+.tab-btn.active{background:linear-gradient(120deg,var(--pri),var(--pri2));color:#fff;box-shadow:0 4px 12px rgba(99,102,241,.35)}
 
-/* ── STATUS BANNER ── */
-.status-banner{border-radius:var(--r);padding:11px 16px;margin-bottom:22px;display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:500;line-height:1.5}
-.status-banner.loading{background:var(--yl-l);border:1px solid var(--yl-b);color:#7A6000}
-.status-banner.error{background:var(--red-l);border:1px solid #FECACA;color:var(--red)}
-.status-banner.ok{background:var(--grn-l);border:1px solid #BBF7D0;color:#15803D}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
 
-/* ── KPI GRID ── */
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:4px}
-@media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:750px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
-.kpi-grid-5{grid-template-columns:repeat(5,1fr)}
-@media(max-width:1200px){.kpi-grid-5{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:750px){.kpi-grid-5{grid-template-columns:repeat(2,1fr)}}
-.advisor-panel{background:linear-gradient(180deg,#F0F5FF,var(--card) 60px);border-radius:var(--r);border:1px solid #D6E4FF;box-shadow:var(--shd);padding:16px;margin-bottom:14px}
-.advisor-head{display:flex;gap:10px;align-items:center;margin-bottom:12px}
-.advisor-head-ico{font-size:22px}
-.advisor-head-title{font-size:13px;font-weight:800;color:var(--txt)}
-.advisor-head-sub{font-size:10.5px;color:var(--mut);margin-top:1px}
-.advisor-item{display:flex;gap:10px;padding:11px 12px;border-radius:10px;margin-bottom:8px;background:var(--card);border:1px solid var(--bdr);border-left:4px solid var(--bdr)}
-.advisor-item:last-child{margin-bottom:0}
-.advisor-ico{font-size:17px;flex-shrink:0;line-height:1.3}
-.advisor-title{font-size:12px;font-weight:800;color:var(--txt);margin-bottom:3px}
-.advisor-text{font-size:11px;color:var(--txt2);line-height:1.6}
-.advisor-item.pri-action{border-left-color:#0866FF;background:#F5F9FF}
-.advisor-item.pri-urgent{border-left-color:var(--red);background:#FEF2F2}
-.advisor-item.pri-warn{border-left-color:#D97706;background:#FFFBEB}
-.advisor-item.pri-good{border-left-color:var(--grn);background:#F0FDF4}
-.advisor-item.pri-info{border-left-color:var(--mut);background:var(--bg)}
+.card{background:var(--card);border-radius:22px;padding:22px;box-shadow:var(--shd);border:1px solid var(--bdr);margin-bottom:14px}
+.card-title{font-size:14px;font-weight:800;color:var(--txt);margin-bottom:5px;letter-spacing:-.01em}
+.card-desc{font-size:11px;color:var(--mut);margin-bottom:18px;line-height:1.65}
 
-.kpi-card{background:var(--card);border-radius:var(--r);padding:16px 15px;box-shadow:var(--shd);border:1px solid var(--bdr);border-top:3px solid var(--bdr);position:relative;overflow:hidden;transition:box-shadow .15s}
-.kpi-card:hover{box-shadow:var(--shd2)}
-.kpi-card.hero{background:var(--ch);border-color:transparent;border-top:3px solid var(--yl)}
-body.dark .kpi-card.hero{background:#0D0E12}
-.kpi-card.good{border-top-color:var(--grn)}
-.kpi-card.warn{border-top-color:#F59E0B}
-.kpi-card.bad{border-top-color:var(--red)}
-.kpi-ico{font-size:18px;margin-bottom:6px;display:block;opacity:.85}
-.kpi-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--mut);display:block;margin-bottom:5px}
-.kpi-card.hero .kpi-lbl{color:rgba(255,255,255,.4)}
-.kpi-val{font-size:22px;font-weight:800;color:var(--txt);display:block;line-height:1.1}
-.kpi-card.hero .kpi-val{color:var(--yl)}
-.kpi-sub{font-size:10px;color:var(--mut);margin-top:5px;display:block}
-.kpi-card.hero .kpi-sub{color:rgba(255,255,255,.3)}
-.kpi-delta{font-size:10.5px;font-weight:600;margin-top:5px;display:block}
-.kpi-delta.up{color:var(--grn)}
-.kpi-delta.dn{color:var(--red)}
-.kpi-delta.neu{color:var(--mut)}
-.kpi-prog{background:var(--bdr);border-radius:99px;height:4px;margin-top:8px;overflow:hidden}
-.kpi-prog-fill{height:100%;border-radius:99px;transition:width .6s}
+.form-row{margin-bottom:15px}
+.form-row label{display:block;font-size:11.5px;font-weight:700;color:var(--txt2);margin-bottom:7px}
+.form-row input,.form-row select{width:100%;padding:13px 15px;border:1.5px solid var(--bdr);border-radius:13px;font-size:14px;color:var(--txt);background:var(--bg);outline:none;transition:border-color .2s}
+.form-row input:focus,.form-row select:focus{border-color:var(--pri);background:#fff}
 
-/* ── AD SPEND INPUT PANEL ── */
-.ad-panel{background:var(--card);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shd);border:1px solid var(--bdr);margin-bottom:4px}
-.ad-title{font-size:12px;font-weight:700;margin-bottom:12px;color:var(--txt);display:flex;align-items:center;gap:7px}
-.ad-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
-@media(max-width:600px){.ad-grid{grid-template-columns:1fr 1fr;}}
-.flbl{display:block;font-size:10px;font-weight:600;color:var(--mut);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
-.finp{width:100%;height:36px;padding:0 10px;border:1.5px solid var(--bdr);border-radius:9px;font-family:var(--font);font-size:12px;font-weight:500;color:var(--txt);background:var(--card2);outline:none;transition:border-color .15s}
-.finp:focus{border-color:var(--yl)}
-.btn-save{height:36px;padding:0 18px;background:var(--yl);color:var(--ch);font-family:var(--font);font-size:12px;font-weight:700;border:none;border-radius:9px;cursor:pointer;white-space:nowrap;transition:all .15s}
-.btn-save:hover{background:var(--yl-d)}
-.ad-result{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap}
-.ad-metric{background:var(--bg2);border-radius:9px;padding:8px 13px;font-size:11.5px}
-.ad-metric strong{display:block;font-size:15px;font-weight:800;color:var(--txt);margin-top:2px}
+.btn{padding:15px 20px;border-radius:14px;border:none;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;width:100%;transition:transform .15s}
+.btn-primary{background:linear-gradient(120deg,var(--pri),var(--pri2));color:#fff;box-shadow:0 6px 16px rgba(99,102,241,.3)}
+.btn-primary:active{transform:scale(.98)}
 
-/* ── CHARTS ── */
-.chart-grid{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:4px}
-@media(max-width:900px){.chart-grid{grid-template-columns:1fr}}
-.chart-box{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--shd);border:1px solid var(--bdr)}
-.chart-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.chart-title{font-size:12px;font-weight:700;color:var(--txt)}
-.chart-badge{font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--yl-l);color:var(--yl-d)}
-.dk-stat{display:flex;flex-direction:column}
-.dk-stat-lbl{font-size:10px;color:var(--mut);font-weight:600;margin-bottom:3px}
-.dk-stat-val{font-size:20px;font-weight:800;color:var(--txt)}
-.gap-alert{display:flex;gap:10px;padding:12px 14px;border-radius:10px;background:var(--red-l);border:1px solid #FECACA}
-.gap-alert.ok{background:var(--grn-l);border-color:#BBF7D0}
-.gap-alert-ico{font-size:18px;flex-shrink:0}
-.gap-alert-title{font-size:12px;font-weight:800;color:var(--txt)}
-.gap-alert-sub{font-size:10.5px;color:var(--mut);margin-top:2px;line-height:1.6}
-.checklist-ref{background:var(--bg);border-radius:10px;padding:12px 14px;border:1px solid var(--bdr)}
-.checklist-ref-title{font-size:10.5px;font-weight:800;color:var(--txt);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em}
-.checklist-ref-item{display:flex;gap:8px;padding:5px 0;font-size:11px;color:var(--txt2);line-height:1.5}
-.checklist-ref-num{width:18px;height:18px;border-radius:50%;background:var(--yl-l);color:var(--yl-d);font-size:9.5px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-canvas{max-height:260px;width:100%!important}
+.result-box{background:var(--card2);border-radius:18px;padding:18px;margin-top:18px;display:none}
+.result-box.show{display:block}
+.result-hero{text-align:center;padding:18px 16px 22px;border-radius:16px;margin-bottom:16px;background:linear-gradient(135deg,var(--pri),var(--pri2));box-shadow:0 8px 20px rgba(99,102,241,.25)}
+.result-hero .lbl{font-size:10.5px;color:rgba(255,255,255,.8);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.result-hero .val{font-size:27px;font-weight:800;color:#fff;margin-top:5px;letter-spacing:-.01em}
+.result-hero .sub{font-size:11px;color:rgba(255,255,255,.85);margin-top:5px;font-weight:500}
 
-/* ── DIAGNOSE PANEL ── */
-.diag-grid{display:flex;flex-direction:column;gap:10px}
-.diag-item{border-radius:var(--r);padding:13px 15px;border:1px solid;display:flex;gap:12px;align-items:flex-start}
-.diag-item.danger{background:var(--red-l);border-color:#FECACA}
-.diag-item.warn{background:#FFFBEB;border-color:#FDE68A}
-.diag-item.ok{background:var(--grn-l);border-color:#BBF7D0}
-.diag-item.info{background:var(--blue-l);border-color:#BFDBFE}
-body.dark .diag-item.danger{background:#2A0808;border-color:#7F1D1D}
-body.dark .diag-item.warn{background:#292200;border-color:#7C5800}
-body.dark .diag-item.ok{background:#0D2818;border-color:#14532D}
-body.dark .diag-item.info{background:#0A1628;border-color:#1D3A6E}
-.diag-ico{font-size:18px;flex-shrink:0;margin-top:1px}
-.diag-title{font-size:12.5px;font-weight:700;margin-bottom:3px}
-.diag-item.danger .diag-title{color:var(--red)}
-.diag-item.warn .diag-title{color:#92400E}
-.diag-item.ok .diag-title{color:#15803D}
-.diag-item.info .diag-title{color:#1D4ED8}
-body.dark .diag-item.warn .diag-title{color:#FCD34D}
-.diag-body{font-size:11px;line-height:1.7;color:var(--txt2)}
+.funnel-step{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--card);border-radius:12px;margin-bottom:7px}
+.funnel-step:last-child{margin-bottom:0}
+.funnel-step .step-lbl{font-size:11.5px;color:var(--txt2);font-weight:600}
+.funnel-step .step-rate{font-size:9px;color:var(--mut);font-weight:400;display:block;margin-top:1px}
+.funnel-step .step-val{font-size:13px;color:var(--pri-d);font-weight:800}
 
-/* ── DATA TABLE ── */
-.tbl-box{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--shd);border:1px solid var(--bdr);overflow-x:auto}
-.tbl{width:100%;border-collapse:collapse;font-size:12px;white-space:nowrap}
-.tbl th{padding:7px 12px;text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);border-bottom:2px solid var(--bdr)}
-.tbl td{padding:8px 12px;border-bottom:1px solid var(--bdr);color:var(--txt)}
-.tbl tr:last-child td{border-bottom:none}
-.tbl tr:hover td{background:var(--card2)}
-.pill{display:inline-block;font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:20px}
-.pill.ok{background:var(--grn-l);color:var(--grn);border:1px solid #BBF7D0}
-.pill.bad{background:var(--red-l);color:var(--red);border:1px solid #FECACA}
-.pill.warn{background:#FFFBEB;color:#92400E;border:1px solid #FDE68A}
-body.dark .pill.warn{background:#292200;color:#FCD34D}
+.rate-note{font-size:9.5px;color:var(--mut);margin-top:12px;line-height:1.65;background:var(--card);border-radius:12px;padding:11px 13px}
 
-/* ── SECTION NOTE ── */
-.sec-note{border-radius:10px;padding:10px 14px;font-size:11.5px;line-height:1.65;margin-bottom:20px;display:flex;gap:9px;align-items:flex-start}
-.sec-note-ico{font-size:15px;flex-shrink:0;margin-top:1px}
-.sec-note.ok{background:var(--grn-l);border:1px solid #BBF7D0;color:#15803D}
-.sec-note.warn{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
-.sec-note.bad{background:var(--red-l);border:1px solid #FECACA;color:var(--red)}
-.sec-note.info{background:var(--blue-l);border:1px solid #BFDBFE;color:#1D4ED8}
-body.dark .sec-note.ok{background:#0D2818;border-color:#14532D;color:#4ADE80}
-body.dark .sec-note.warn{background:#292200;border-color:#7C5800;color:#FCD34D}
-body.dark .sec-note.bad{background:#2A0808;border-color:#7F1D1D;color:#F87171}
-body.dark .sec-note.info{background:#0A1628;border-color:#1D3A6E;color:#93C5FD}
-.empty-box{text-align:center;padding:30px;color:var(--mut);font-size:12px}
-.loader-spin{display:inline-block;width:18px;height:18px;border:2px solid var(--bdr);border-top-color:var(--yl);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+.compare-row{padding:12px 14px;background:var(--card);border-radius:14px;margin-bottom:8px}
+.compare-row:last-child{margin-bottom:0}
+.compare-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.compare-lbl{font-size:11.5px;font-weight:700;color:var(--txt2)}
+.compare-badge{font-size:9px;font-weight:800;padding:3px 9px;border-radius:20px}
+.compare-badge.good{background:var(--grn-l);color:var(--grn)}
+.compare-badge.warn{background:var(--amb-l);color:var(--amb)}
+.compare-badge.bad{background:var(--red-l);color:var(--red)}
+.compare-nums{font-size:10px;color:var(--mut)}
+.compare-nums b{color:var(--txt)}
+.advisor-section{margin-top:16px}
+.advisor-section-title{font-size:13px;font-weight:800;color:var(--txt);margin-bottom:3px}
+.advisor-section-sub{font-size:10.5px;color:var(--mut);margin-bottom:12px;line-height:1.6}
+
+.leak-box{background:linear-gradient(135deg,var(--red),#FB7185);border-radius:16px;padding:16px;margin-top:12px;box-shadow:0 6px 16px rgba(244,63,94,.25)}
+.leak-box.good{background:linear-gradient(135deg,var(--grn),#34D399);box-shadow:0 6px 16px rgba(16,185,129,.25)}
+.leak-box .leak-title{font-size:12.5px;font-weight:800;color:#fff;margin-bottom:4px}
+.leak-box .leak-kategori{font-size:10px;font-weight:700;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px}
+.leak-box .leak-body{font-size:11px;color:rgba(255,255,255,.92);line-height:1.65}
+.leak-box .leak-actions{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.25)}
+.leak-box .leak-action-item{font-size:10.5px;color:#fff;line-height:1.8;font-weight:500}
+
+.sum-indicator{font-size:11px;font-weight:700;text-align:center;padding:10px;border-radius:12px;background:var(--bg);color:var(--mut)}
+.sum-indicator.good{background:var(--grn-l);color:var(--grn)}
+.sum-indicator.warn{background:var(--amb-l);color:var(--amb)}
+
+.target-ideal-box{background:linear-gradient(135deg,var(--pri),var(--pri2));border-radius:16px;padding:14px 16px;margin-bottom:16px;box-shadow:0 6px 16px rgba(99,102,241,.25)}
+.target-ideal-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.03em}
+.target-ideal-val{font-size:20px;font-weight:800;color:#fff;margin-top:4px}
+.target-ideal-sub{font-size:10.5px;color:rgba(255,255,255,.85);margin-top:3px}
+.btn-mini{margin-top:10px;padding:8px 14px;border-radius:10px;border:none;background:rgba(255,255,255,.2);color:#fff;font-family:var(--font);font-size:10.5px;font-weight:700;cursor:pointer}
+
+.score-hero{text-align:center;padding:20px 16px 24px;border-radius:18px;margin-bottom:16px;background:linear-gradient(135deg,var(--pri),var(--pri2));box-shadow:0 8px 20px rgba(99,102,241,.25)}
+.score-hero .lbl{font-size:10.5px;color:rgba(255,255,255,.8);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.score-hero .val{font-size:40px;font-weight:800;color:#fff;margin-top:4px;line-height:1}
+.score-hero .val span{font-size:16px;font-weight:600;color:rgba(255,255,255,.75)}
+.score-hero .sub{font-size:11px;color:rgba(255,255,255,.9);margin-top:6px}
+
+.score-item{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--card);border-radius:12px;margin-bottom:7px}
+.score-item:last-child{margin-bottom:0}
+.score-item-lbl{font-size:11.5px;color:var(--txt2);font-weight:600}
+.score-item-raw{font-size:9.5px;color:var(--mut);display:block;margin-top:1px}
+.score-item-badge{font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px}
+.score-item-badge.s100{background:var(--grn-l);color:var(--grn)}
+.score-item-badge.s75{background:#DCFCE7;color:#15803D}
+.score-item-badge.s40{background:var(--amb-l);color:var(--amb)}
+.score-item-badge.s10{background:var(--red-l);color:var(--red)}
+
+.leaderboard-title{font-size:13px;font-weight:800;color:var(--txt);margin:18px 0 10px}
+.leaderboard-row{display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--card);border-radius:14px;margin-bottom:8px;box-shadow:var(--shd);border:1px solid var(--bdr);cursor:pointer}
+.leaderboard-rank{font-size:16px;font-weight:800;color:var(--mut);width:26px;flex-shrink:0;text-align:center}
+.leaderboard-rank.top{color:var(--pri)}
+.leaderboard-info{flex:1;min-width:0}
+.leaderboard-name{font-size:12px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.leaderboard-meta{font-size:9.5px;color:var(--mut);margin-top:2px}
+.leaderboard-score{font-size:18px;font-weight:800;color:var(--pri-d);flex-shrink:0}
+.leaderboard-del{background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:4px 6px;flex-shrink:0}
+.empty-leaderboard{text-align:center;padding:24px 16px;color:var(--mut);font-size:11px;background:var(--bg);border-radius:14px}
+
+.tipe-toggle{display:flex;gap:8px}
+.tipe-toggle-btn{flex:1;padding:12px;border-radius:12px;border:1.5px solid var(--bdr);background:var(--bg);color:var(--mut);font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;text-align:center}
+.tipe-toggle-btn.active{background:linear-gradient(120deg,var(--pri),var(--pri2));border-color:transparent;color:#fff}
+
+.loading{text-align:center;padding:50px 20px;color:var(--mut);font-size:12px}
+.err-box{text-align:center;padding:30px 20px;color:var(--red);font-size:11.5px;line-height:1.6;background:var(--red-l);border-radius:16px;margin:0 4px}
 </style>
 </head>
 <body>
+
 <header class="topbar">
-  <div class="topbar-row1">
-    <div class="brand">
-      <div class="brand-logo">KE</div>
-      <div>
-        <div class="brand-name">Executive Marketing Dashboard</div>
-        <div class="brand-sub">Divisi Toko — Kubah Emas</div>
-      </div>
-    </div>
-    <button class="tbtn" id="btn-theme">☀️</button>
-  </div>
-  <div class="topbar-row2">
-    <span class="month-now-lbl" id="month-now-lbl"></span>
-    <button class="tbtn" id="btn-export" onclick="exportData()">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Export CSV
-    </button>
-    <button class="tbtn" id="btn-refresh">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-      Refresh
-    </button>
-    <span class="update-badge" id="update-badge" style="margin-left:auto"></span>
-  </div>
+  <div class="tb-title">🧮 Kalkulator Funnel & Budget</div>
+  <div class="tb-sub">Berdasarkan Pipeline Marketing — rate live dari sheet</div>
 </header>
 
-<div class="main">
-
-  <!-- STATUS BANNER -->
-  <div class="status-banner loading" id="status-banner">
-    <div class="loader-spin"></div>
-    <span>Mengambil data dari 4 Google Sheets...</span>
+<div class="wrap">
+  <div id="content">
+    <div class="loading">⏳ Mengambil rate konversi dari sheet...</div>
   </div>
-
-  <!-- KPI ROW 1: OMZET + BIAYA IKLAN + ROAS (card utama) -->
-  <span class="slbl">📊 Target vs Realisasi Omzet</span>
-  <div class="kpi-grid" id="kpi-omzet">
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-  </div>
-  <div id="note-omzet"></div>
-
-  <div class="advisor-panel">
-    <div class="advisor-head">
-      <span class="advisor-head-ico">🧠</span>
-      <div>
-        <div class="advisor-head-title">Rekomendasi Strategis — Meta Ads Advisor</div>
-        <div class="advisor-head-sub">Saran keputusan, bukan cuma kesimpulan</div>
-      </div>
-    </div>
-    <div id="ads-advisor"></div>
-  </div>
-
-  <!-- EFISIENSI MARKETING (sisa dari Biaya Marketing & ROAS, ROAS sudah pindah ke atas) -->
-  <span class="slbl">📈 Efisiensi Marketing</span>
-  <div class="kpi-grid" id="kpi-marketing">
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-  </div>
-
-  <!-- CHARTS + DIAGNOSA PER SECTION -->
-  <div id="note-marketing"></div>
-
-  <span class="slbl">🧾 Transaksi & Average Order Value</span>
-  <div class="kpi-grid" id="kpi-aov">
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-  </div>
-  <div id="nota-media-validasi"></div>
-
-  <div class="advisor-panel">
-    <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px">
-      <span style="font-size:22px">🧭</span>
-      <div>
-        <div style="font-size:13px;font-weight:800;color:var(--txt)">Kesimpulan & Opsi Tindakan</div>
-        <div style="font-size:10.5px;color:var(--mut);margin-top:1px">Buat mencapai Target Perusahaan</div>
-      </div>
-    </div>
-    <div id="aov-kesimpulan"></div>
-  </div>
-
-  <span class="slbl">🔮 Proyeksi Akhir Bulan</span>
-  <div class="kpi-grid" id="kpi-proyeksi">
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-  </div>
-
-  <span class="slbl">🎯 Posisi vs Target Perusahaan</span>
-  <div style="font-size:10.5px;color:var(--mut);background:var(--card2);border-radius:10px;padding:10px 12px;margin-bottom:14px;line-height:1.6">Target resmi dari manajemen (tabel FORECAST per bulan) — beda sumber dari Target Omzet di section pertama. Update otomatis tiap ganti bulan.</div>
-  <div class="kpi-grid" id="kpi-target-perusahaan">
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">Loading...</div><div class="kpi-val">—</div></div>
-  </div>
-
-  <span class="slbl">📈 Tren Harian</span>
-  <div class="chart-box">
-    <div class="chart-hd">
-      <div class="chart-title">Omzet Harian Aktual vs Target Harian</div>
-      <span class="chart-badge" id="chart-badge-1">—</span>
-    </div>
-    <canvas id="chart-daily" style="min-height:280px"></canvas>
-    <div id="note-chart" style="margin-top:12px"></div>
-  </div>
-
-  <div class="chart-box" style="margin-top:14px">
-    <div class="chart-hd">
-      <div class="chart-title">Deal vs Kasir Harian</div>
-      <span class="chart-badge" id="chart-badge-dealkasir">—</span>
-    </div>
-    <div id="dealkasir-summary" style="display:flex;gap:28px;margin-bottom:16px;flex-wrap:wrap"></div>
-    <div id="dealkasir-alert" style="margin-bottom:14px"></div>
-    <canvas id="chart-dealkasir" style="min-height:240px"></canvas>
-    <div id="dealkasir-empty" style="display:none;text-align:center;padding:30px 20px;color:var(--mut);font-size:12px">Belum ada data Deal/Kasir buat bulan ini.</div>
-    <div id="dealkasir-checklist" style="margin-top:16px"></div>
-  </div>
-
-  <span class="slbl">📅 Omzet Real & Deal Sales per Pekan</span>
-  <div class="chart-box">
-    <div class="card-desc" style="font-size:10.5px;color:var(--mut);margin-bottom:12px">Pekan = Senin s/d Sabtu. Pekan 1 mulai dari tanggal 1 sampai Sabtu pertama (bisa lebih pendek dari 6 hari). Hari Minggu gak dihitung (toko tutup).</div>
-    <canvas id="chart-weekly" style="min-height:260px"></canvas>
-    <div id="weekly-empty" style="display:none;text-align:center;padding:30px 20px;color:var(--mut);font-size:12px">Belum ada data Deal/Kasir buat dikelompokin per pekan.</div>
-  </div>
-
-  <!-- AUTOMATED DIAGNOSE -->
-  <span class="slbl">🔍 Diagnosa Otomatis — Ringkasan Keseluruhan</span>
-  <div class="diag-grid" id="diagnose-panel">
-    <div class="diag-item info"><div class="diag-ico">⏳</div><div><div class="diag-title">Memuat data...</div><div class="diag-body">Diagnosa akan muncul setelah semua data berhasil dimuat.</div></div></div>
-  </div>
-
-</div><!-- /main -->
+</div>
 
 <script>
-// ── CONFIG ───────────────────────────────────────────
-var SHEETS = {
-  // Sheet BARU: REPORT V.2 — snapshot Omzet Real & Forecast (Target) BULAN BERJALAN saja
-  report_now: { id:'1n9Mp66i3JwJE6hdV3jevhOw8EOa1b7Lo8FvBegtsTo4', sheet:'REPORT V.2', range:'A1:E6', headers:0 },
-  // Sheet BENERAN: "KESIMPULAN" — tab di DALAM file "REPORT V.2"
-  // (spreadsheet 1n9Mp66i3...), gid=1834609864. SEBELUMNYA saya salah
-  // kira "KESIMPULAN" itu di spreadsheet OMZET/Iklan yang beda —
-  // ternyata itu 1 FILE yang sama kayak report_now, cuma TAB-nya beda.
-  // Pakai gid (bukan nama) biar lebih pasti kena tab yang tepat.
-  kesimpulan_source: { id:'1n9Mp66i3JwJE6hdV3jevhOw8EOa1b7Lo8FvBegtsTo4', gid:1834609864, sheet:'KESIMPULAN', range:'A1:B25', headers:0 },
-  // Sheet BARU: "FORECAST" — tabel Target Perusahaan per bulan
-  // (ditetapin manajemen dari awal, BUKAN hasil hitungan sistem kayak
-  // sumber report_now). A=Bulan, B=Hari, C=Target/Hari, D=Target/Bulan.
-  forecast_bulanan: { id:'1n9Mp66i3JwJE6hdV3jevhOw8EOa1b7Lo8FvBegtsTo4', gid:1593919434, sheet:'FORECAST', range:'A1:D14', headers:0 },
-  // Sheet BARU: REPORT V.2 (tab sama persis kayak report_now, baris beda) —
-  // tabel harian Deal vs Kasir, mulai baris 86
-  deal_kasir: { id:'1n9Mp66i3JwJE6hdV3jevhOw8EOa1b7Lo8FvBegtsTo4', gid:602747520, sheet:'REPORT V.2', range:'A86:C120', headers:0 },
-  // Sheet BARU: "Data Harian Pelanggan" — blok TERPISAH di tab yang
-  // SAMA (REPORT V.2), mulai baris 126. A=Tanggal, E=JUMLAH (total
-  // Omset Umum+Tukang+Proyek harian). Range dilebarin ke row 200 biar
-  // aman nangkep data yang terus bertambah tiap hari.
-  data_pelanggan: { id:'1n9Mp66i3JwJE6hdV3jevhOw8EOa1b7Lo8FvBegtsTo4', gid:602747520, sheet:'REPORT V.2', range:'A126:K200', headers:0 },
-  // Sheet BARU: OMZET tab — Biaya Iklan per bulan (A=Tahun, B=Bulan, F=Iklan)
-  iklan: { id:'1Pv2b04WvHOCtT5Dcd4YvXyn8G3MP5VPbPXEmN5nC6Vc', sheet:'OMZET', range:'A2:F400', headers:0 },
-  // Sheet 3: PIVOT col D (tanggal) & E (jumlah transaksi/nota harian) mulai baris 10
-  pivot_tx: { id:'1Ag2wEb_jP4R2RcN-fI-Em7LiDcIZwSf6PweJuXic9QM', sheet:'PIVOT', range:'D10:E500', headers:0 },
-  // Sheet 3: PIVOT col J (tanggal) & K (omzet harian) mulai baris 10 — dipakai Tren Harian, TIDAK diubah
-  pivot_omzet: { id:'1Ag2wEb_jP4R2RcN-fI-Em7LiDcIZwSf6PweJuXic9QM', sheet:'PIVOT', range:'J10:K500', headers:0 },
-  // Sheet 4: DATABASE TDK — leads pipeline from row 7 — dipakai Tren Harian (Distribusi Leads), TIDAK diubah
-  leads: { id:'1k8gxOxuiwghZW6ldkXrrvHpOD7zOau9zgWfypJL0DNs', sheet:'Database TDK', range:'A7:K', headers:0 },
-  // Sheet 2: RINGKASAN HARIAN — daily summary
-  harian: { id:'1Z3kXM4e4Ic6YUhhYzB3mrlSwXAbrYqJedgNDsbNtmuk', sheet:'Ringkasan Harian', range:'A1:Z200', headers:1 },
-};
+// ══════════════════════════════════════════════════════
+// SUMBER DATA — Pipeline Marketing sheet
+// ══════════════════════════════════════════════════════
+const SHEET_ID = '1yVP3lGxCx88FDI5fgXQHdXF1G0gWldsSs7fT7RKDNPg';
+const GID = 0;
 
-var CACHE_KEY = 'exec_dash_v12';
-var CACHE_TTL = 45 * 60 * 1000; // 45 menit
-
-// ── STORAGE ──────────────────────────────────────────
-var MONTHS_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-
-function lsGet(k,def){try{var v=localStorage.getItem(k);return v!==null?JSON.parse(v):def;}catch(e){return def;}}
-function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
-
-
-// ── UTILS ─────────────────────────────────────────────
-var fmt  = function(n){ return 'Rp '+Math.round(n||0).toLocaleString('id-ID'); };
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-var fmtS = function(n){ n=Math.round(n||0); if(n>=1e9)return'Rp '+(n/1e9).toFixed(1)+' M'; if(n>=1e6)return'Rp '+(n/1e6).toFixed(1)+' jt'; if(n>=1e3)return'Rp '+(n/1e3).toFixed(0)+' rb'; return'Rp '+n; };
-var pct  = function(a,b){ return b>0?+(a/b*100).toFixed(1):0; };
-var esc  = function(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
-var nowYM = function(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); };
-var ymLabel = function(ym){ var p=ym.split('-'); return (MONTHS_ID[+p[1]-1]||p[1])+' '+p[0]; };
-
-// ── GVIZ JSONP ────────────────────────────────────────
-function gviz(cfg){
-  return new Promise(function(resolve,reject){
-    var cb='_exec_'+Date.now()+'_'+Math.floor(Math.random()*9999);
-    var sc=document.createElement('script'), done=false;
-    var t=setTimeout(function(){if(done)return;done=true;cleanup();reject(new Error('Timeout: '+cfg.sheet));},12000);
-    window[cb]=function(d){
-      if(done)return;done=true;cleanup();
-      if(d.status==='error'){reject(new Error('Sheet error: '+cfg.sheet));return;}
-      if(!d.table){reject(new Error('No table: '+cfg.sheet));return;}
-      resolve(d.table);
-    };
-    sc.onerror=function(){if(done)return;done=true;cleanup();reject(new Error('Script error: '+cfg.sheet));};
-    function cleanup(){clearTimeout(t);try{delete window[cb];}catch(e){window[cb]=undefined;}if(sc.parentNode)sc.parentNode.removeChild(sc);}
-    var url='https://docs.google.com/spreadsheets/d/'+cfg.id+'/gviz/tq?tqx=out:json;responseHandler:'+cb
-      +(cfg.gid!==undefined?'&gid='+cfg.gid:'&sheet='+encodeURIComponent(cfg.sheet))
-      +(cfg.tq?'&tq='+encodeURIComponent(cfg.tq):(cfg.range?'&range='+encodeURIComponent(cfg.range):''))
-      +'&headers='+(cfg.headers||0)
-      +'&cb='+Date.now();
-    document.head.appendChild(sc);
-    sc.src=url;
-  });
-}
-
-function parseGvizDate(v){
-  if(!v)return null;
-  var m=String(v).match(/Date\((\d+),(\d+),(\d+)\)/);
-  if(m)return new Date(+m[1],+m[2],+m[3]);
-  var d=new Date(v);return isNaN(d)?null:d;
-}
-
-function parseDataPelanggan(table){
-  // A=Tanggal, E=JUMLAH (total Omset Umum+Tukang+Proyek harian),
-  // J=Nota Online, K=Nota Offline (tabel "NOTA PER MEDIA", nempel di
-  // baris yang SAMA kayak Data Harian Pelanggan, kolom lebih ke kanan).
-  // Pakai pola parsing tanggal yang SAMA kayak parseDealKasir (udah
-  // terbukti jalan) — handle Date object asli ATAU teks "DD/MM/YYYY".
-  var p=parseTable(table);
-  var cols=p.hdrs;
-  var colA=cols[0]!==undefined?cols[0]:'A';
-  var colE=cols[4]!==undefined?cols[4]:'E';
-  var colJ=cols[9]!==undefined?cols[9]:'J';
-  var colK=cols[10]!==undefined?cols[10]:'K';
-  var result=[];
-  p.rows.forEach(function(r){
-    var dateVal=r[colA];
-    var dv=null;
-    if(dateVal instanceof Date) dv=dateVal;
-    else if(dateVal){
-      var s=String(dateVal).trim();
-      var mRaw=s.match(/^Date\((\d+),(\d+),(\d+)\)/);
-      if(mRaw){ dv=new Date(+mRaw[1],+mRaw[2],+mRaw[3]); }
-      else{
-        var m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-        if(m) dv=new Date(+m[3],+m[2]-1,+m[1]);
-        else{ var d2=new Date(s); if(!isNaN(d2)) dv=d2; }
-      }
-    }
-    if(!dv) return;
-    var jumlah=parseNumStr(r[colE]||0);
-    var notaOnline=parseNumStr(r[colJ]||0);
-    var notaOffline=parseNumStr(r[colK]||0);
-    if(jumlah===0&&notaOnline===0&&notaOffline===0) return; // baris belum keisi, skip
-    result.push({date:dv,jumlah:jumlah,notaOnline:notaOnline,notaOffline:notaOffline});
-  });
-  console.log('[Data Pelanggan] baris valid ditemukan:',result.length,'| 3 contoh pertama:',result.slice(0,3));
-  return result.sort(function(a,b){return a.date-b.date;});
-}
-
-function parseDealKasir(table){
-  // A=Tanggal, B=Deal, C=Kasir. Range A86:C120 SENGAJA nyakup baris
-  // header-nya sendiri (baris 86 isinya teks "TANGGAL/DEAL/KASIR")
-  // biar persis sama permintaan user — baris itu otomatis kelewat di
-  // sini karena kolom Tanggal-nya bukan tanggal valid.
-  //
-  // PENTING: akses kolom pakai p.hdrs[0]/[1]/[2] (POSISI), BUKAN
-  // hardcode huruf 'A'/'B'/'C' — soalnya range ini gak mulai dari
-  // baris 1, dan gviz kadang ngasih id kolom yang beda dari huruf
-  // aslinya di kondisi itu. Ini pola yang SAMA kayak parsePivotOmzet/
-  // parsePivotTx yang udah kebukti jalan buat kasus serupa.
-  var p=parseTable(table);
-  var cols=p.hdrs;
-  var result=[];
-  p.rows.forEach(function(r){
-    var dateVal=(cols[0]!==undefined&&r[cols[0]]!==undefined&&r[cols[0]]!=='')?r[cols[0]]:r['A'];
-    var dv=null;
-    if(dateVal instanceof Date) dv=dateVal;
-    else if(dateVal){
-      var s=String(dateVal).trim();
-      // Kemungkinan 1: format mentah gviz "Date(2026,8,1)" — ini
-      // muncul kalau kolomnya gak otomatis kedetect sbg tipe date
-      // (kejadian di kolom yang isinya campuran teks & tanggal).
-      var mRaw=s.match(/^Date\((\d+),(\d+),(\d+)\)/);
-      if(mRaw){ dv=new Date(+mRaw[1],+mRaw[2],+mRaw[3]); }
-      else{
-        // Kemungkinan 2: format teks "01/09/2026"
-        var m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-        if(m) dv=new Date(+m[3],+m[2]-1,+m[1]);
-        else{ var d2=new Date(s); if(!isNaN(d2)) dv=d2; }
-      }
-    }
-    if(!dv) return;
-    var bVal=(cols[1]!==undefined&&r[cols[1]]!==undefined&&r[cols[1]]!=='')?r[cols[1]]:r['B'];
-    var cVal=(cols[2]!==undefined&&r[cols[2]]!==undefined&&r[cols[2]]!=='')?r[cols[2]]:r['C'];
-    var deal=parseNumStr(bVal||0);
-    var kasir=parseNumStr(cVal||0);
-    if(deal===0&&kasir===0) return;
-    result.push({date:dv,deal:deal,kasir:kasir});
-  });
-  console.log('[Deal vs Kasir] kolom terdeteksi:',cols,'| baris mentah pertama:',p.rows[0],'| baris berhasil diparse:',result.length);
-  console.log('[Deal vs Kasir] Detail 10 baris pertama (buat debug tanggal):', p.rows.slice(0,10).map(function(r){
-    var v=r[cols[0]]!==undefined?r[cols[0]]:r['A'];
-    return {nilai:v, tipe:typeof v, isDate:v instanceof Date};
-  }));
-  return result.sort(function(a,b){return a.date-b.date;});
-}
-
-function parseTable(table){
-  var hdrs=table.cols.map(function(c){return c.label||c.id||'';});
-  var rows=table.rows.map(function(row){
-    var obj={};
-    table.cols.forEach(function(col,i){
-      var lbl=col.label||col.id||'';
-      var cell=row.c?row.c[i]:null;
-      if(!cell||cell.v===null||cell.v===undefined){obj[lbl]='';}
-      else if(col.type==='date'||col.type==='datetime'){obj[lbl]=parseGvizDate(cell.v);obj['_f_'+lbl]=cell.f||'';}
-      else{obj[lbl]=cell.v;}
-    });
-    return obj;
-  });
-  return{hdrs:hdrs,rows:rows};
-}
-
-// ── PARSE SPECIFIC SHEETS ─────────────────────────────
+function fmt(n){ return 'Rp ' + Math.round(n||0).toLocaleString('id-ID'); }
+function fmtNum(n){ return Math.round(n||0).toLocaleString('id-ID'); }
 function parseNumStr(s){
-  if(typeof s==='number')return s;
+  if(typeof s==='number') return s;
   var clean=String(s||'').replace(/[^0-9,.-]/g,'').replace(/\./g,'').replace(',','.');
   return parseFloat(clean)||0;
 }
 
-function parseForecastBulanan(table){
-  // Cari baris yang nama bulannya cocok sama bulan yang lagi jalan.
-  // A=Bulan, B=Hari, D=Target/Bulan (kolom C dilewatin, itu Target/Hari
-  // yang gak dipake di sini karena kita mau Target/Bulan total-nya).
-  var p=parseTable(table);
-  var cols=p.hdrs;
-  var colA=cols[0]!==undefined?cols[0]:'A';
-  var colB=cols[1]!==undefined?cols[1]:'B';
-  var colD=cols[3]!==undefined?cols[3]:'D';
-
-  var currentMonthName=MONTHS_ID[new Date().getMonth()];
-  var result={hari:0,target_bulan:0,found:false};
-  p.rows.forEach(function(r){
-    var bulanText=String(r[colA]||'').trim();
-    if(bulanText.toLowerCase()===currentMonthName.toLowerCase()){
-      result.hari=parseNumStr(r[colB]||0);
-      result.target_bulan=parseNumStr(r[colD]||0);
-      result.found=true;
-    }
+function gviz(){
+  var url='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?gid='+GID+'&tqx=out:json&range=A1:P12';
+  return fetch(url).then(function(r){return r.text();}).then(function(txt){
+    var json=JSON.parse(txt.substring(txt.indexOf('{'), txt.lastIndexOf('}')+1));
+    return json.table;
   });
-  console.log('[Forecast Bulanan] cari baris bulan "'+currentMonthName+'":',result);
-  return result;
 }
 
-function parseKesimpulanSource(table){
-  var p=parseTable(table);
-  var cols=p.hdrs;
-  var colA=cols[0]!==undefined?cols[0]:'A';
-  var colB=cols[1]!==undefined?cols[1]:'B';
-
-  // Log JELAS: index array vs isi kolom A & B, biar ketauan PERSIS
-  // posisi 291 (atau angka lain) itu nyangkut di index array yang mana
-  // — gak nebak-nebak lagi.
-  console.log('[Kesimpulan] === DIAGNOSTIK MENTAH ===');
-  p.rows.forEach(function(r,i){
-    console.log('  index['+i+'] → kolom A: "'+(r[colA]!==undefined?r[colA]:'')+'" | kolom B: "'+(r[colB]!==undefined?r[colB]:'')+'"');
+function parseTable(table){
+  var rows=table.rows.map(function(row){
+    return (row.c||[]).map(function(cell){
+      return cell && cell.v!==null && cell.v!==undefined ? cell.v : '';
+    });
   });
+  return rows;
+}
 
-  function getRow(rowNum,extraOffset){
-    // Ketauan dari laporan user: "Jumlah Nota" (row 7) kemarin malah
-    // ngambil isi row 8 (AOV) — artinya 1 baris di atas (kemungkinan
-    // row 1 kosong) keskip sama Google, geser semua baris ke bawah
-    // naik 1 posisi. Makanya offset dasarnya -2 (bukan -1) dari nomor
-    // baris sheet aslinya. Udah kebukti konsisten buat row 3/5/7/8.
-    // extraOffset disediain kalau nanti ada baris LAIN yang butuh
-    // offset tambahan (kayak kasus row 23 dulu), tinggal dipanggil
-    // getRow(rowNum, extraOffset).
-    var idx=rowNum-2-(extraOffset||0);
-    return p.rows[idx]?parseNumStr(p.rows[idx][colB]||0):0;
+// ══════════════════════════════════════════════════════
+// TURUNIN RATE DARI ANGKA MENTAH (bukan dari teks label) —
+// biar gak kesandung typo label kayak sebelumnya. Posisi kolom:
+// A=Channel,B=HariAktif,C=OmzetPerusahaan,D=%,E=OmzetChannel,
+// F=RataNilaiProyek,G=ClosingDeal,H=ClosingSurvey,I=LeadsMasuk/Respon,
+// J=KlikCTA/LeadsFU,K=LPView/FUPerHari,L=Klik-CTR,M=Impression,
+// N=CPM,O=Budget,P=BudgetHarian
+// ══════════════════════════════════════════════════════
+var RATES = null;
+
+function findRowByChannel(rows, keyword){
+  // GViz suka "loncatin" baris kosong, jadi index array BUKAN patokan
+  // yang bisa dipercaya buat nomor baris di sheet aslinya (udah
+  // berkali-kali kejadian di app lain). Jadi dicari dari ISI kolom A
+  // (nama channel), bukan posisi tetap.
+  for(var i=0;i<rows.length;i++){
+    var label = String(rows[i][0]||'').toLowerCase().trim();
+    if(label.includes(keyword)) return rows[i];
   }
-  var result={
-    hari_kerja: getRow(3),
-    jumlah_nota: getRow(7),
-    aov: getRow(8),
-    deal_sales: getRow(5),
+  return null;
+}
+
+function deriveRates(rows){
+  function col(row,i){ return row ? parseNumStr(row[i]) : 0; }
+
+  var metaRow = findRowByChannel(rows, 'meta ads');
+  var dbRow = findRowByChannel(rows, 'follow up database');
+  var repRow = findRowByChannel(rows, 'repeat');
+  var bulanIniRow = findRowByChannel(rows, 'bulan ini');
+
+  console.log('[Pipeline Marketing] Baris ditemukan — Meta Ads:', metaRow, '| FU Database:', dbRow, '| Repeat:', repRow, '| FU Bulan Ini:', bulanIniRow);
+
+  if(!metaRow || !dbRow || !repRow || !bulanIniRow){
+    throw new Error('Gak nemu baris channel yang dicari di sheet (Meta Ads/Follow Up Database/Repeat/Bulan ini). Cek apakah nama channel di kolom A masih sama persis.');
+  }
+
+  var meta = {
+    hariAktif: col(metaRow,1),
+    rataNilaiProyek: col(metaRow,5),
+    rateDealSurvey: col(metaRow,6)/col(metaRow,7),       // G/H
+    rateSurveyLeads: col(metaRow,7)/col(metaRow,8),      // H/I
+    rateLeadsKlikCta: col(metaRow,8)/col(metaRow,9),     // I/J
+    rateKlikCtaLpView: col(metaRow,9)/col(metaRow,10),   // J/K
+    rateLpViewKlikCtr: col(metaRow,10)/col(metaRow,11),  // K/L
+    rateKlikCtrImpression: col(metaRow,11)/col(metaRow,12), // L/M
+    cpm: col(metaRow,13),
   };
-  console.log('[Kesimpulan] Dipakai sekarang (row3/5/7/8 → offset -2 konsisten):','hari_kerja=',result.hari_kerja,'jumlah_nota=',result.jumlah_nota,'aov=',result.aov,'deal_sales=',result.deal_sales);
-  return result;
-}
 
-function parseReportNow(table){
-  // A=label (HARI KERJA/OMSET REAL/DEAL SALES/FORECAST), B=Total bulan berjalan
-  // Kolom D di baris FORECAST = "Hari Aktif" (total hari kerja SEBULAN,
-  // beda dari HARI KERJA yang itu hari yang SUDAH berlalu).
-  var p=parseTable(table);
-  var map={};
-  var hariAktif=0;
-  p.rows.forEach(function(r){
-    var label=String(r['A']||'').trim().toUpperCase();
-    var val=parseNumStr(r['B']||0);
-    if(label)map[label]=val;
-    if(label==='FORECAST'){ hariAktif=parseNumStr(r['D']||0); }
-  });
-  return{
-    hari_kerja: map['HARI KERJA']||0,
-    omset_real: (map['OMSET REAL']||map['OMZET REAL'])||0,
-    deal_sales: map['DEAL SALES']||0,
-    forecast:   map['FORECAST']||0,
-    hari_aktif: hariAktif,
+  function parseFU(row){
+    return {
+      hariAktif: col(row,1),
+      rataNilaiProyek: col(row,5),
+      rateDealSurvey: col(row,6)/col(row,7),      // G/H
+      rateSurveyLeadsRespon: col(row,7)/col(row,8), // H/I
+      rateLeadsResponLeadsFu: col(row,8)/col(row,9), // I/J
+    };
+  }
+
+  return {
+    meta: meta,
+    database: parseFU(dbRow),
+    repeat: parseFU(repRow),
+    bulanIni: parseFU(bulanIniRow),
   };
 }
 
-function parseIklan(table){
-  // A=Tahun, B=Bulan (nama Indonesia), F=Biaya Iklan. Range mulai baris 2
-  // (header dilewatin lewat range A2:F400, bukan lewat opsi headers).
-  var p=parseTable(table);
-  var result=[];
-  p.rows.forEach(function(r){
-    var tahun=parseInt(r['A'])||0;
-    var bulan=String(r['B']||'').trim();
-    if(!tahun||!bulan)return;
-    var idx=MONTHS_ID.indexOf(bulan);
-    if(idx<0)return;
-    var ym=tahun+'-'+String(idx+1).padStart(2,'0');
-    result.push({ym:ym, biaya_iklan: parseNumStr(r['F']||0)});
-  });
-  return result;
+// ══════════════════════════════════════════════════════
+// KALKULATOR A — Omzet Target → Budget (mundur dari Deal ke Impression)
+// ══════════════════════════════════════════════════════
+function calcA(omzetTarget){
+  var m = RATES.meta;
+  var deal = omzetTarget / m.rataNilaiProyek;
+  var survey = deal / m.rateDealSurvey;
+  var leads = survey / m.rateSurveyLeads;
+  var klikCta = leads / m.rateLeadsKlikCta;
+  var lpView = klikCta / m.rateKlikCtaLpView;
+  var klikCtr = lpView / m.rateLpViewKlikCtr;
+  var impression = klikCtr / m.rateKlikCtrImpression;
+  var budgetTotal = impression * m.cpm / 1000;
+  var budgetHarian = budgetTotal / m.hariAktif;
+  return {deal,survey,leads,klikCta,lpView,klikCtr,impression,budgetTotal,budgetHarian};
 }
 
-function parsePivotTx(table){
-  // Col D (idx 0) = Tanggal, Col E (idx 1) = Jumlah Transaksi/Nota harian
-  var p=parseTable(table);
-  var result=[];
-  p.rows.forEach(function(r){
-    var cols=p.hdrs;
-    var a=r[cols[0]]; // D = tanggal
-    var b=parseNumStr(r[cols[1]]||0); // E = jumlah nota
-    if(!a&&!b)return;
-    var dv=null;
-    if(a instanceof Date)dv=a;
-    else if(a){var d=new Date(String(a));if(!isNaN(d))dv=d;}
-    result.push({date:dv,label:String(a||''),count:b});
-  });
-  return result;
+// ══════════════════════════════════════════════════════
+// KALKULATOR B — Budget Total → Omzet Potensial (maju dari Impression ke Deal)
+// ══════════════════════════════════════════════════════
+function calcB(budgetTotal){
+  var m = RATES.meta;
+  var impression = budgetTotal / m.cpm * 1000;
+  var klikCtr = impression * m.rateKlikCtrImpression;
+  var lpView = klikCtr * m.rateLpViewKlikCtr;
+  var klikCta = lpView * m.rateKlikCtaLpView;
+  var leads = klikCta * m.rateLeadsKlikCta;
+  var survey = leads * m.rateSurveyLeads;
+  var deal = survey * m.rateDealSurvey;
+  var omzet = deal * m.rataNilaiProyek;
+  var budgetHarian = budgetTotal / m.hariAktif;
+  return {impression,klikCtr,lpView,klikCta,leads,survey,deal,omzet,budgetHarian};
 }
 
-function parsePivotOmzet(table){
-  // Col J (idx 0 in this range) = Tanggal, Col K (idx 1) = Omzet harian
-  var p=parseTable(table);
-  var result=[];
-  p.rows.forEach(function(r){
-    var cols=p.hdrs;
-    var a=r[cols[0]]; // J = tanggal
-    var b=parseNumStr(r[cols[1]]||0); // K = omzet
-    if(!a&&!b)return;
-    var dv=null;
-    if(a instanceof Date)dv=a;
-    else if(a){var d=new Date(String(a));if(!isNaN(d))dv=d;}
-    result.push({date:dv,label:String(a||''),val:b});
-  });
-  return result;
+// ══════════════════════════════════════════════════════
+// KALKULATOR C — Jumlah Leads (Database/Repeat) → Omzet Potensial
+// ══════════════════════════════════════════════════════
+function rateForTipe(tipe){
+  if(tipe==='repeat') return RATES.repeat;
+  if(tipe==='bulanini') return RATES.bulanIni;
+  return RATES.database;
+}
+function tipeLabel(tipe){
+  if(tipe==='repeat') return 'Repeat Customer';
+  if(tipe==='bulanini') return 'Follow Up Bulan Ini';
+  return 'Follow Up Database';
 }
 
-function parseLeads(table){
-  // col G (idx 6) = Kategori Online/Offline, col I (idx 8) = Beli/Tanya,
-  // col K (idx 10) = Follow Up/Arsip, col F (idx 5) = date.
-  // byMonth SEKARANG cuma ngitung yang Online (buat Closing Rate Online
-  // di TDK, sesuai instruksi) — Offline TETEP dihitung terpisah
-  // (byMonthOffline) biar siap dipakai pas Closing Rate Offline resmi
-  // ditambahin nanti, TAPI gak dipakai/ditampilin di mana pun sekarang.
-  var p=parseTable(table);
-  var cols=p.hdrs;
-  var total=p.rows.filter(function(r){
-    // Filter out completely empty rows
-    return cols.some(function(c){return r[c]!=='';});
-  });
-  var byMonth={};
-  var byMonthOffline={};
-  total.forEach(function(r){
-    var d=r[cols[5]];
-    var ym='unknown';
-    if(d instanceof Date){ym=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
-    var kategori=String(r[cols[6]]||'').toLowerCase().trim();
-    var isOffline=kategori.includes('offline');
-    var target=isOffline?byMonthOffline:byMonth;
-    if(!target[ym])target[ym]={total:0,beli:0,tanya:0,ttb:0,follow_up:0,arsip:0};
-    var m=target[ym];
-    m.total++;
-    var si=String(r[cols[8]]||'').toLowerCase().trim();
-    var sk=String(r[cols[10]]||'').toLowerCase().trim();
-    if(si.includes('beli'))m.beli++;
-    else if(si.includes('tanya'))m.tanya++;
-    else m.ttb++;
-    if(sk.includes('follow')||/^fu$/.test(sk))m.follow_up++;
-    else if(sk.includes('arsip'))m.arsip++;
-  });
-  console.log('[Leads TDK] Kolom G (kategori) — contoh 5 baris pertama:',total.slice(0,5).map(function(r){return r[cols[6]];}),'| Online bulan ini akan dihitung dari sini.');
-  return{byMonth:byMonth,byMonthOffline:byMonthOffline,total:total.length,cols:cols};
+function calcC(jumlahLeads, tipe){
+  var r = rateForTipe(tipe);
+  var leadsRespon = jumlahLeads * r.rateLeadsResponLeadsFu;
+  var survey = leadsRespon * r.rateSurveyLeadsRespon;
+  var deal = survey * r.rateDealSurvey;
+  var omzet = deal * r.rataNilaiProyek;
+  return {leadsRespon,survey,deal,omzet};
 }
 
-// ── STATE ────────────────────────────────────────────
-var D={
-  report_now:{},   // current month KPIs (REPORT V.2: Omset Real, Forecast, Hari Kerja, Deal Sales)
-  kesimpulan:{hari_kerja:0,jumlah_nota:0,aov:0,deal_sales:0}, // dari sheet KESIMPULAN (spreadsheet OMZET/Iklan) B3/B5/B7/B8
-  forecast_bulanan:{hari:0,target_bulan:0,found:false}, // Target Perusahaan resmi per bulan (tabel FORECAST)
-  deal_kasir:[],   // tabel harian Deal vs Kasir (REPORT V.2 A86:C120) — dipakai Tren Harian
-  data_pelanggan:[], // Data Harian Pelanggan (REPORT V.2 A126:E200) — kolom JUMLAH, dipakai Tren Harian & Per Pekan
-  iklan:[],        // biaya iklan per bulan (sheet OMZET, kolom F)
-  pivot_tx:[],     // daily transaction count (col D=date, E=count)
-  pivot_omzet:[],  // daily omzet (col J=date, K=omzet) — dipakai Tren Harian
-  leads:{},        // leads analysis — dipakai Tren Harian (Distribusi Leads)
-  harian:[],       // ringkasan harian
-  loaded:false,
-  error:null,
-  lastUpdate:null,
+// ══════════════════════════════════════════════════════
+// RENDER UI
+// ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+// TARGET ALOKASI — disimpen di localStorage, dipakai Tab A & Tab C
+// buat nunjukin "Target Ideal" otomatis.
+// ══════════════════════════════════════════════════════
+function updateTargetPreview(){
+  const pMeta = +document.getElementById('input-target-meta').value || 0;
+  const pDb = +document.getElementById('input-target-database').value || 0;
+  const pRep = +document.getElementById('input-target-repeat').value || 0;
+  const pBulan = +document.getElementById('input-target-bulanini').value || 0;
+  const total = pMeta+pDb+pRep+pBulan;
+  const el = document.getElementById('target-sum-indicator');
+  el.textContent = 'Total: '+total+'%'+(total===100?' ✅ pas':total>100?' ⚠️ kelebihan '+(total-100)+'%':' ⚠️ kurang '+(100-total)+'%');
+  el.className = 'sum-indicator '+(total===100?'good':'warn');
+}
+
+function getTargetAlokasi(){
+  try{
+    const raw = localStorage.getItem('funnelcalc_target_alokasi');
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+
+function saveTargetAlokasi(){
+  const omzet = numRupiah('input-target-omzet');
+  const pMeta = +document.getElementById('input-target-meta').value || 0;
+  const pDb = +document.getElementById('input-target-database').value || 0;
+  const pRep = +document.getElementById('input-target-repeat').value || 0;
+  const pBulan = +document.getElementById('input-target-bulanini').value || 0;
+  const total = pMeta+pDb+pRep+pBulan;
+
+  if(omzet<=0){
+    document.getElementById('result-target').innerHTML = '<div class="err-box">Isi Target Omzet Perusahaan dulu.</div>';
+    document.getElementById('result-target').classList.add('show');
+    return;
+  }
+  if(total!==100){
+    document.getElementById('result-target').innerHTML = '<div class="err-box">Total persentase harus PAS 100% (sekarang '+total+'%). Sesuaikan dulu sebelum disimpan.</div>';
+    document.getElementById('result-target').classList.add('show');
+    return;
+  }
+
+  const alokasi = {omzet,pMeta,pDb,pRep,pBulan};
+  localStorage.setItem('funnelcalc_target_alokasi', JSON.stringify(alokasi));
+  renderTargetResult(alokasi);
+  renderTargetIdealBadgeA();
+  renderTargetIdealBadgeC();
+}
+
+function renderTargetResult(alokasi){
+  const omzetMeta = alokasi.omzet*alokasi.pMeta/100;
+  const omzetDb = alokasi.omzet*alokasi.pDb/100;
+  const omzetRep = alokasi.omzet*alokasi.pRep/100;
+  const omzetBulan = alokasi.omzet*alokasi.pBulan/100;
+  document.getElementById('result-target').innerHTML = `
+    <div class="result-hero">
+      <div class="lbl">✅ Tersimpan</div>
+      <div class="val">${fmt(alokasi.omzet)}</div>
+      <div class="sub">Total Target Omzet Perusahaan</div>
+    </div>
+    <div class="funnel-step"><span class="step-lbl">Meta Ads (${alokasi.pMeta}%)</span><span class="step-val">${fmt(omzetMeta)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Follow Up Database (${alokasi.pDb}%)</span><span class="step-val">${fmt(omzetDb)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Repeat Customer (${alokasi.pRep}%)</span><span class="step-val">${fmt(omzetRep)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Follow Up Bulan Ini (${alokasi.pBulan}%)</span><span class="step-val">${fmt(omzetBulan)}</span></div>
+    <div class="rate-note">Angka ini sekarang otomatis muncul di tab "Omzet→Budget" dan "Leads→Omzet".</div>
+  `;
+  document.getElementById('result-target').classList.add('show');
+}
+
+function loadTargetAlokasiToForm(){
+  const alokasi = getTargetAlokasi();
+  if(!alokasi) return;
+  document.getElementById('input-target-omzet').value = Math.round(alokasi.omzet).toLocaleString('id-ID');
+  document.getElementById('input-target-meta').value = alokasi.pMeta;
+  document.getElementById('input-target-database').value = alokasi.pDb;
+  document.getElementById('input-target-repeat').value = alokasi.pRep;
+  document.getElementById('input-target-bulanini').value = alokasi.pBulan;
+  updateTargetPreview();
+  renderTargetResult(alokasi);
+}
+
+function renderTargetIdealBadgeA(){
+  const el = document.getElementById('target-ideal-a');
+  if(!el) return;
+  const alokasi = getTargetAlokasi();
+  if(!alokasi){ el.innerHTML=''; return; }
+  const omzetMeta = alokasi.omzet*alokasi.pMeta/100;
+  el.innerHTML = `
+    <div class="target-ideal-box">
+      <div class="target-ideal-lbl">🎯 Target Ideal Meta Ads (dari Target Alokasi)</div>
+      <div class="target-ideal-val">${fmt(omzetMeta)}</div>
+      <button class="btn-mini" onclick="applyTargetIdealA(${omzetMeta})">Pakai angka ini →</button>
+    </div>
+  `;
+}
+function applyTargetIdealA(omzet){
+  document.getElementById('input-a').value = Math.round(omzet).toLocaleString('id-ID');
+  runCalcA();
+}
+
+function renderTargetIdealBadgeC(){
+  const el = document.getElementById('target-ideal-c');
+  if(!el) return;
+  const alokasi = getTargetAlokasi();
+  if(!alokasi){ el.innerHTML=''; return; }
+  const tipe = document.getElementById('input-c-tipe').value;
+  const p = tipe==='repeat'?alokasi.pRep : tipe==='bulanini'?alokasi.pBulan : alokasi.pDb;
+  const omzetChannel = alokasi.omzet*p/100;
+  const r = rateForTipe(tipe);
+  const dealNeeded = omzetChannel/r.rataNilaiProyek;
+  const surveyNeeded = dealNeeded/r.rateDealSurvey;
+  const leadsResponNeeded = surveyNeeded/r.rateSurveyLeadsRespon;
+  const leadsNeeded = Math.ceil(leadsResponNeeded/r.rateLeadsResponLeadsFu);
+  el.innerHTML = `
+    <div class="target-ideal-box">
+      <div class="target-ideal-lbl">🎯 Target Ideal ${tipeLabel(tipe)} (dari Target Alokasi)</div>
+      <div class="target-ideal-val">${fmt(omzetChannel)}</div>
+      <div class="target-ideal-sub">Butuh ~${fmtNum(leadsNeeded)} leads buat capai target ini</div>
+      <button class="btn-mini" onclick="applyTargetIdealC(${leadsNeeded})">Pakai angka ini →</button>
+    </div>
+  `;
+}
+function applyTargetIdealC(leads){
+  document.getElementById('input-c').value = leads;
+  runCalcC();
+}
+
+function renderApp(){
+  document.getElementById('content').innerHTML = `
+    <div class="tabs">
+      <div class="tab-btn" data-tab="target" onclick="switchTab('target')">🎯 Target<br>Alokasi</div>
+      <div class="tab-btn active" data-tab="a" onclick="switchTab('a')">💰 Omzet<br>→ Budget</div>
+      <div class="tab-btn" data-tab="b" onclick="switchTab('b')">📈 Budget<br>→ Omzet</div>
+      <div class="tab-btn" data-tab="c" onclick="switchTab('c')">📇 Leads<br>→ Omzet</div>
+      <div class="tab-btn" data-tab="d" onclick="switchTab('d')">🔍 Kontrol<br>Meta Ads</div>
+      <div class="tab-btn" data-tab="e" onclick="switchTab('e')">📞 Kontrol<br>Follow Up</div>
+      <div class="tab-btn" data-tab="f" onclick="switchTab('f')">📊 Skor<br>Creative</div>
+    </div>
+
+    <div class="tab-panel" data-panel="target">
+      <div class="card">
+        <div class="card-title">Target Alokasi Channel</div>
+        <div class="card-desc">Isi Target Omzet Perusahaan + pembagian % ke 4 channel. Begitu disimpan, otomatis muncul jadi "Target Ideal" di tab Omzet→Budget dan Leads→Omzet — gak perlu input ulang.</div>
+        <div class="form-row">
+          <label>Target Omzet Perusahaan (Rp)</label>
+          <input type="text" inputmode="numeric" id="input-target-omzet" placeholder="250.000.000" oninput="formatRupiah(this);updateTargetPreview()">
+        </div>
+        <div class="form-row">
+          <label>% Meta Ads</label>
+          <input type="number" inputmode="numeric" min="0" max="100" id="input-target-meta" placeholder="50" oninput="updateTargetPreview()">
+        </div>
+        <div class="form-row">
+          <label>% Follow Up Database</label>
+          <input type="number" inputmode="numeric" min="0" max="100" id="input-target-database" placeholder="20" oninput="updateTargetPreview()">
+        </div>
+        <div class="form-row">
+          <label>% Repeat Customer</label>
+          <input type="number" inputmode="numeric" min="0" max="100" id="input-target-repeat" placeholder="20" oninput="updateTargetPreview()">
+        </div>
+        <div class="form-row">
+          <label>% Follow Up Bulan Ini</label>
+          <input type="number" inputmode="numeric" min="0" max="100" id="input-target-bulanini" placeholder="10" oninput="updateTargetPreview()">
+        </div>
+        <div class="sum-indicator" id="target-sum-indicator">Total: 0%</div>
+        <button class="btn btn-primary" onclick="saveTargetAlokasi()" style="margin-top:14px">💾 Simpan Target Alokasi</button>
+        <div class="result-box" id="result-target"></div>
+      </div>
+    </div>
+
+    <div class="tab-panel active" data-panel="a">
+      <div class="card">
+        <div class="card-title">Target Omzet → Budget yang Dibutuhin</div>
+        <div class="card-desc">Mau dapet omzet sekian, butuh budget iklan Meta Ads berapa? Lengkap sama breakdown funnel-nya.</div>
+        <div id="target-ideal-a"></div>
+        <div class="form-row">
+          <label>Target Omzet (Rp)</label>
+          <input type="text" inputmode="numeric" id="input-a" placeholder="150.000.000" oninput="formatRupiah(this)">
+        </div>
+        <button class="btn btn-primary" onclick="runCalcA()">Hitung Budget</button>
+        <div class="result-box" id="result-a"></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-panel="b">
+      <div class="card">
+        <div class="card-title">Budget Total → Omzet Potensial</div>
+        <div class="card-desc">Punya budget sekian buat Meta Ads, idealnya bisa ngasilin omzet berapa?</div>
+        <div class="form-row">
+          <label>Budget Total (Rp)</label>
+          <input type="text" inputmode="numeric" id="input-b" placeholder="10.000.000" oninput="formatRupiah(this)">
+        </div>
+        <button class="btn btn-primary" onclick="runCalcB()">Hitung Omzet Potensial</button>
+        <div class="result-box" id="result-b"></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-panel="c">
+      <div class="card">
+        <div class="card-title">Leads yang Ada → Omzet Potensial</div>
+        <div class="card-desc">Punya database/repeat/leads warm-cold bulan ini sekian, bisa dilikuidasi jadi omzet berapa?</div>
+        <div class="form-row">
+          <label>Tipe Leads</label>
+          <select id="input-c-tipe" onchange="renderTargetIdealBadgeC()">
+            <option value="database">Follow Up Database</option>
+            <option value="repeat">Repeat Customer</option>
+            <option value="bulanini">Follow Up Bulan Ini (Warm/Cold dari Meta Ads)</option>
+          </select>
+        </div>
+        <div id="target-ideal-c"></div>
+        <div class="form-row">
+          <label>Jumlah Leads</label>
+          <input type="number" inputmode="numeric" min="0" id="input-c" placeholder="200">
+        </div>
+        <button class="btn btn-primary" onclick="runCalcC()">Hitung Omzet Potensial</button>
+        <div class="result-box" id="result-c"></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-panel="d">
+      <div class="card">
+        <div class="card-title">Kontrol Aktual Meta Ads — Rencana vs Kenyataan</div>
+        <div class="card-desc">Isi angka AKTUAL hasil campaign (periode bebas, gak perlu per-hari). App bandingin tiap tahap ke rate IDEAL dari Pipeline Marketing, kasih tau tahap mana yang paling "bocor".</div>
+        <div class="form-row"><label>Impression</label><input type="text" inputmode="numeric" id="input-d-impression" placeholder="0" oninput="formatRupiah(this)"></div>
+        <div class="form-row"><label>Klik / CTR</label><input type="text" inputmode="numeric" id="input-d-klikctr" placeholder="0" oninput="formatRupiah(this)"></div>
+        <div class="form-row"><label>LP View</label><input type="text" inputmode="numeric" id="input-d-lpview" placeholder="0" oninput="formatRupiah(this)"></div>
+        <div class="form-row"><label>Klik CTA</label><input type="text" inputmode="numeric" id="input-d-klikcta" placeholder="0" oninput="formatRupiah(this)"></div>
+        <div class="form-row"><label>Leads Masuk</label><input type="text" inputmode="numeric" id="input-d-leads" placeholder="0" oninput="formatRupiah(this)"></div>
+        <div class="form-row"><label>Closing Survey</label><input type="text" inputmode="numeric" id="input-d-survey" placeholder="0" oninput="formatRupiah(this)"></div>
+        <div class="form-row"><label>Closing Deal</label><input type="text" inputmode="numeric" id="input-d-deal" placeholder="0" oninput="formatRupiah(this)"></div>
+        <button class="btn btn-primary" onclick="runCalcD()">Analisa</button>
+        <div class="result-box" id="result-d"></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-panel="e">
+      <div class="card">
+        <div class="card-title">Kontrol Aktual Follow Up — Rencana vs Kenyataan</div>
+        <div class="card-desc">Isi angka AKTUAL hasil follow up (periode bebas). App bandingin ke rate IDEAL channel yang dipilih, kasih tau tahap mana yang paling "bocor" dari sisi disiplin & kualitas follow up.</div>
+        <div class="form-row">
+          <label>Tipe Channel</label>
+          <select id="input-e-tipe">
+            <option value="database">Follow Up Database</option>
+            <option value="repeat">Repeat Customer</option>
+            <option value="bulanini">Follow Up Bulan Ini (Warm/Cold dari Meta Ads)</option>
+          </select>
+        </div>
+        <div class="form-row"><label>Jumlah Leads</label><input type="text" inputmode="numeric" id="input-e-leads" placeholder="0" oninput="formatRupiah(this)"></div>
+        <div class="form-row"><label>Leads Respon</label><input type="text" inputmode="numeric" id="input-e-respon" placeholder="0" oninput="formatRupiah(this)"></div>
+        <div class="form-row"><label>Closing Survey</label><input type="text" inputmode="numeric" id="input-e-survey" placeholder="0" oninput="formatRupiah(this)"></div>
+        <div class="form-row"><label>Closing Deal</label><input type="text" inputmode="numeric" id="input-e-deal" placeholder="0" oninput="formatRupiah(this)"></div>
+        <button class="btn btn-primary" onclick="runCalcE()">Analisa</button>
+        <div class="result-box" id="result-e"></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-panel="f">
+      <div class="card">
+        <div class="card-title">Skor Ads Creative</div>
+        <div class="card-desc">Isi performa 1 creative, dapet 1 skor komposit + breakdown alasannya. Simpan buat dibandingin sama creative lain di leaderboard bawah.</div>
+        <div class="form-row">
+          <label>Nama Creative</label>
+          <input type="text" id="input-f-nama" placeholder="Misal: Video Testimoni Budi">
+        </div>
+        <div class="form-row">
+          <label>Tipe Creative</label>
+          <div class="tipe-toggle">
+            <button type="button" class="tipe-toggle-btn active" id="btn-tipe-video" onclick="setCreativeTipe('video')">🎬 Video</button>
+            <button type="button" class="tipe-toggle-btn" id="btn-tipe-image" onclick="setCreativeTipe('image')">🖼️ Image</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>CPM (Rp)</label>
+          <input type="text" inputmode="numeric" id="input-f-cpm" placeholder="40.000" oninput="formatRupiah(this)">
+        </div>
+        <div class="form-row">
+          <label>CTR (%)</label>
+          <input type="number" inputmode="decimal" step="0.01" id="input-f-ctr" placeholder="1.5">
+        </div>
+        <div class="form-row">
+          <label>Frekuensi</label>
+          <input type="number" inputmode="decimal" step="0.1" id="input-f-frekuensi" placeholder="1.8">
+        </div>
+        <div class="form-row" id="row-f-hookrate">
+          <label>Hook Rate / ThruPlay (%) <span class="hint">(cuma buat Video)</span></label>
+          <input type="number" inputmode="decimal" step="0.1" id="input-f-hookrate" placeholder="25">
+        </div>
+        <button class="btn btn-primary" onclick="runCalcF()">Hitung & Simpan Skor</button>
+        <div class="result-box" id="result-f"></div>
+
+        <div class="leaderboard-title">🏆 Leaderboard Creative</div>
+        <div id="leaderboard-f"></div>
+      </div>
+    </div>
+  `;
+}
+
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(function(el){
+    el.classList.toggle('active', el.dataset.tab===tab);
+  });
+  document.querySelectorAll('.tab-panel').forEach(function(el){
+    el.classList.toggle('active', el.dataset.panel===tab);
+  });
+}
+
+function formatRupiah(el){
+  const raw=el.value.replace(/\D/g,'');
+  el.value=raw?Number(raw).toLocaleString('id-ID'):'';
+}
+function numRupiah(id){
+  const raw=document.getElementById(id).value.replace(/\D/g,'');
+  return raw?+raw:0;
+}
+
+function pct1(r){ return (r*100).toFixed(1)+'%'; }
+
+function funnelStepsHTML(r){
+  const m = RATES.meta;
+  return `
+    <div class="funnel-step"><span class="step-lbl">Impression</span><span class="step-val">${fmtNum(r.impression)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Klik / CTR <span class="step-rate">(${pct1(m.rateKlikCtrImpression)} dari Impression)</span></span><span class="step-val">${fmtNum(r.klikCtr)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">LP View <span class="step-rate">(${pct1(m.rateLpViewKlikCtr)} dari Klik/CTR)</span></span><span class="step-val">${fmtNum(r.lpView)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Klik CTA <span class="step-rate">(${pct1(m.rateKlikCtaLpView)} dari LP View)</span></span><span class="step-val">${fmtNum(r.klikCta)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Leads Masuk <span class="step-rate">(${pct1(m.rateLeadsKlikCta)} dari Klik CTA)</span></span><span class="step-val">${fmtNum(r.leads)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Closing Survey <span class="step-rate">(${pct1(m.rateSurveyLeads)} dari Leads)</span></span><span class="step-val">${fmtNum(r.survey)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Closing Deal <span class="step-rate">(${pct1(m.rateDealSurvey)} dari Survey)</span></span><span class="step-val">${fmtNum(r.deal)}</span></div>
+  `;
+}
+
+function runCalcA(){
+  const omzet = numRupiah('input-a');
+  if(omzet<=0){ return; }
+  const r = calcA(omzet);
+  document.getElementById('result-a').innerHTML = `
+    <div class="result-hero">
+      <div class="lbl">Budget Total Dibutuhin</div>
+      <div class="val">${fmt(r.budgetTotal)}</div>
+      <div class="sub">${fmt(r.budgetHarian)} / hari · ${RATES.meta.hariAktif} hari aktif</div>
+    </div>
+    ${funnelStepsHTML(r)}
+    <div class="rate-note">CPM (biaya per 1000 Impression): ${fmt(RATES.meta.cpm)}. Semua rate di atas diambil live dari sheet Pipeline Marketing.</div>
+  `;
+  document.getElementById('result-a').classList.add('show');
+}
+
+function runCalcB(){
+  const budget = numRupiah('input-b');
+  if(budget<=0){ return; }
+  const r = calcB(budget);
+  document.getElementById('result-b').innerHTML = `
+    <div class="result-hero">
+      <div class="lbl">Omzet Potensial</div>
+      <div class="val">${fmt(r.omzet)}</div>
+      <div class="sub">${fmtNum(r.deal)} Deal · ${fmt(r.budgetHarian)}/hari selama ${RATES.meta.hariAktif} hari</div>
+    </div>
+    ${funnelStepsHTML(r)}
+    <div class="rate-note">CPM (biaya per 1000 Impression): ${fmt(RATES.meta.cpm)}. Semua rate di atas diambil live dari sheet Pipeline Marketing.</div>
+  `;
+  document.getElementById('result-b').classList.add('show');
+}
+
+function runCalcC(){
+  const leads = +document.getElementById('input-c').value || 0;
+  const tipe = document.getElementById('input-c-tipe').value;
+  if(leads<=0){ return; }
+  const r = calcC(leads, tipe);
+  const r2 = rateForTipe(tipe);
+  document.getElementById('result-c').innerHTML = `
+    <div class="result-hero">
+      <div class="lbl">Omzet Potensial</div>
+      <div class="val">${fmt(r.omzet)}</div>
+      <div class="sub">${fmtNum(r.deal)} Deal dari ${leads.toLocaleString('id-ID')} leads (${tipeLabel(tipe)})</div>
+    </div>
+    <div class="funnel-step"><span class="step-lbl">Jumlah Leads</span><span class="step-val">${leads.toLocaleString('id-ID')}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Leads Respon <span class="step-rate">(${pct1(r2.rateLeadsResponLeadsFu)} dari Jumlah Leads)</span></span><span class="step-val">${fmtNum(r.leadsRespon)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Closing Survey <span class="step-rate">(${pct1(r2.rateSurveyLeadsRespon)} dari Leads Respon)</span></span><span class="step-val">${fmtNum(r.survey)}</span></div>
+    <div class="funnel-step"><span class="step-lbl">Closing Deal <span class="step-rate">(${pct1(r2.rateDealSurvey)} dari Survey)</span></span><span class="step-val">${fmtNum(r.deal)}</span></div>
+    <div class="rate-note">Tipe: ${tipeLabel(tipe)}. Semua rate diambil live dari sheet Pipeline Marketing.</div>
+  `;
+  document.getElementById('result-c').classList.add('show');
+}
+
+// ══════════════════════════════════════════════════════
+// MODE KONTROL AKTUAL — bandingin rate AKTUAL (dari input user) vs
+// rate IDEAL (dari sheet Pipeline Marketing). Ambang batas good/warn/
+// bad (90%/60% dari ideal) itu ketentuan saya sendiri, bukan dari
+// sheet — biar ada acuan jelas, bisa disesuaikan kalau mau beda.
+function classifyRatio(ratio){
+  if(ratio===null) return '';
+  if(ratio>=0.9) return 'good';
+  if(ratio>=0.6) return 'warn';
+  return 'bad';
+}
+function badgeText(ratio){
+  if(ratio===null) return '—';
+  return Math.round(ratio*100)+'% dari ideal';
+}
+
+// ── PLAYBOOK EXPERT — diagnosa + action plan spesifik per titik
+// funnel. Ini disusun berdasarkan pola umum Meta Ads/landing page
+// funnel, BUKAN dari sheet Pipeline Marketing (sheet cuma punya rate
+// angka, bukan rekomendasi tindakan).
+const ACTION_PLAYBOOK = {
+  'Impression → Klik/CTR': {
+    kategori: 'Masalah Iklan (Creative & Targeting)',
+    diagnosis: 'Orang lihat iklannya tapi gak tergerak klik — biasanya creative kurang nyantol atau targeting kurang pas.',
+    actions: [
+      'Ganti hook 3 detik pertama di video/gambar iklan',
+      'Cek audience fatigue — udah berapa lama creative ini jalan tanpa diganti?',
+      'Test format baru: video vs carousel vs single image',
+      'Review ulang targeting — audience masih relevan sama produk?'
+    ]
+  },
+  'Klik/CTR → LP View': {
+    kategori: 'Masalah Teknis Landing Page',
+    diagnosis: 'Orang klik iklannya, tapi gak sampai kelihatan halamannya — ini paling sering soal teknis, bukan konten.',
+    actions: [
+      'Cek loading speed landing page (target di bawah 3 detik)',
+      'Pastikan link iklan gak ada yang broken/salah redirect',
+      'Tes buka dari HP langsung — mayoritas traffic iklan dari mobile',
+      'Cek ada gak pop-up/interstitial yang bikin orang kabur duluan'
+    ]
+  },
+  'LP View → Klik CTA': {
+    kategori: 'Masalah Copy & Desain Landing Page',
+    diagnosis: 'Orang udah lihat halamannya, tapi gak tergerak klik tombol — berarti pesannya belum meyakinkan.',
+    actions: [
+      'Perkuat headline — harus langsung jawab "apa untungnya buat saya?"',
+      'Bikin tombol CTA lebih menonjol (warna, ukuran, posisi)',
+      'Tambah social proof — testimoni, jumlah customer, rating',
+      'Kurangi elemen yang "bersaing" perhatian sama tombol CTA'
+    ]
+  },
+  'Klik CTA → Leads': {
+    kategori: 'Masalah Friksi di Langkah Terakhir',
+    diagnosis: 'Orang udah niat klik, tapi gagal/malas nyelesain langkah buat jadi leads beneran.',
+    actions: [
+      'Sederhanain form — makin dikit field wajib, makin bagus',
+      'Pastikan auto-reply WA/chat jalan otomatis, jangan bikin orang nunggu',
+      'Cek tombol WA langsung buka chat, bukan muter ke halaman lain dulu',
+      'Cari tau ada gak step tersembunyi yang bikin orang bingung'
+    ]
+  },
+  'Leads → Survey': {
+    kategori: 'Masalah Respon & Kapasitas CS',
+    diagnosis: 'Leads udah masuk, tapi gak sempat/gak maksimal di-follow — biasanya soal kecepatan atau kapasitas tim.',
+    actions: [
+      'Cek kecepatan respon pertama — target di bawah 5 menit',
+      'Review SOP follow up — ada leads yang kelewat gak ke-follow?',
+      'Cek kapasitas CS — jumlah leads udah ngelebihin kemampuan tim?',
+      'Pastikan semua leads ke-assign, gak ada yang nyangkut tanpa PIC'
+    ]
+  },
+  'Survey → Deal': {
+    kategori: 'Masalah Closing & Handling Keberatan',
+    diagnosis: 'Udah sampai tahap serius (survey), tapi gagal convert jadi transaksi — ini paling mahal buat dibiarkan.',
+    actions: [
+      'Review script closing — CS udah handle keberatan dengan baik?',
+      'Cek kompetitif harga — kalah bersaing sama kompetitor?',
+      'Evaluasi proses survey — informasinya udah lengkap & meyakinkan?',
+      'Cek Lost Reason paling sering — harga, lokasi, atau alasan lain?'
+    ]
+  },
 };
-var SEL_MONTH=nowYM();
-var CHART_DAILY=null, CHART_LEADS=null, CHART_LEADS_2=null; // kept for reference only
 
-// ── LOAD DATA ─────────────────────────────────────────
-function loadData(force){
-  showBanner('loading','Mengambil data dari 4 Google Sheets...');
-  document.getElementById('btn-refresh').classList.add('spin');
+function runCalcD(){
+  const impression = numRupiah('input-d-impression');
+  const klikCtr = numRupiah('input-d-klikctr');
+  const lpView = numRupiah('input-d-lpview');
+  const klikCta = numRupiah('input-d-klikcta');
+  const leads = numRupiah('input-d-leads');
+  const survey = numRupiah('input-d-survey');
+  const deal = numRupiah('input-d-deal');
 
-  if(!force){
-    var cached=lsGet(CACHE_KEY,null);
-    if(cached&&Date.now()-cached.ts<CACHE_TTL){
-      D=cached.data;D.loaded=true;
-      document.getElementById('btn-refresh').classList.remove('spin');
-      renderAll();
-      showBanner('ok','Data dari cache · Terakhir: '+new Date(cached.ts).toLocaleString('id-ID'));
-      return;
-    }
-  }
-
-  Promise.allSettled([
-    gviz(SHEETS.report_now).then(parseReportNow).then(function(v){D.report_now=v;}),
-    gviz(SHEETS.kesimpulan_source).then(parseKesimpulanSource).then(function(v){D.kesimpulan=v;}).catch(function(err){console.error('[Kesimpulan] GAGAL:',err);D.kesimpulan={hari_kerja:0,jumlah_nota:0,aov:0,deal_sales:0};}),
-    gviz(SHEETS.forecast_bulanan).then(parseForecastBulanan).then(function(v){D.forecast_bulanan=v;}).catch(function(err){console.error('[Forecast Bulanan] GAGAL:',err);D.forecast_bulanan={hari:0,target_bulan:0,found:false};}),
-    gviz(SHEETS.deal_kasir).then(function(table){console.log('[Deal vs Kasir] Raw table dari Google:',table);return table;}).then(parseDealKasir).then(function(v){D.deal_kasir=v;console.log('[Deal vs Kasir] Berhasil, jumlah baris:',v.length);}).catch(function(err){console.error('[Deal vs Kasir] GAGAL fetch/parse:',err);D.deal_kasir=[];}),
-    gviz(SHEETS.data_pelanggan).then(parseDataPelanggan).then(function(v){D.data_pelanggan=v;}).catch(function(err){console.error('[Data Pelanggan] GAGAL:',err);D.data_pelanggan=[];}),
-    gviz(SHEETS.iklan).then(parseIklan).then(function(v){D.iklan=v;}),
-    gviz(SHEETS.pivot_tx).then(parsePivotTx).then(function(v){D.pivot_tx=v;}),
-    gviz(SHEETS.pivot_omzet).then(parsePivotOmzet).then(function(v){D.pivot_omzet=v;}),
-    gviz(SHEETS.leads).then(parseLeads).then(function(v){D.leads=v;}),
-    gviz(SHEETS.harian).then(parseTable).then(function(v){D.harian=v.rows||[];}).catch(function(){}),
-  ]).then(function(results){
-    var errors=results.filter(function(r){return r.status==='rejected';});
-    D.loaded=true;D.lastUpdate=new Date();
-    lsSet(CACHE_KEY,{ts:Date.now(),data:JSON.parse(JSON.stringify(D,function(k,v){return v instanceof Date?v.toISOString():v;}))});
-    document.getElementById('btn-refresh').classList.remove('spin');
-    document.getElementById('update-badge').textContent='Update: '+D.lastUpdate.toLocaleTimeString('id-ID');
-    if(errors.length){showBanner('warn','⚠️ '+errors.length+' sumber data gagal dimuat. Menampilkan data yang tersedia.');}
-    else{showBanner('ok','✅ Semua data berhasil dimuat');}
-    renderAll();
-  });
-}
-
-// ── BANNER ────────────────────────────────────────────
-function showBanner(type,msg){
-  var el=document.getElementById('status-banner');
-  el.className='status-banner '+type;
-  el.innerHTML=(type==='loading'?'<div class="loader-spin"></div>':type==='ok'?'✅':type==='warn'?'⚠️':'❌')+'<span>'+esc(msg)+'</span>';
-  el.style.display='flex';
-  if(type==='ok')setTimeout(function(){el.style.display='none';},4000);
-}
-
-// ── KPI CARD BUILDER ─────────────────────────────────
-function kpiCard(ico,lbl,val,sub,delta,prog,colorClass){
-  var pc=colorClass||'';
-  var h='<div class="kpi-card '+(pc)+'">'
-    +'<span class="kpi-ico">'+ico+'</span>'
-    +'<span class="kpi-lbl">'+lbl+'</span>'
-    +'<span class="kpi-val">'+esc(String(val))+'</span>';
-  if(sub)h+='<span class="kpi-sub">'+esc(String(sub))+'</span>';
-  if(delta){var dcls=delta.startsWith('+')&&!delta.includes('—')?'up':delta.startsWith('-')?'dn':'neu';h+='<span class="kpi-delta '+dcls+'">'+esc(delta)+'</span>';}
-  if(prog!=null){var pv=Math.min(100,Math.max(0,+prog));var pc2=pv>=100?'#16A34A':pv>=80?'#F5C518':'#DC2626';h+='<div class="kpi-prog"><div class="kpi-prog-fill" style="width:'+pv+'%;background:'+pc2+'"></div></div>';}
-  h+='</div>';
-  return h;
-}
-
-// ── GET DATA FOR SELECTED MONTH ───────────────────────
-function getMonthData(ym){
-  var isCurrentMonth=ym===nowYM();
-  // Target Omzet, Real Omzet, Deal Sales, Hari Kerja SEKARANG dari REPORT
-  // V.2 — sheet ini cuma nyediain snapshot BULAN BERJALAN, gak ada data
-  // historis bulan lain lagi (sesuai keputusan: real bulan ini saja).
-  var rn = isCurrentMonth ? (D.report_now||{}) : {};
-  // Biaya Iklan dari sheet OMZET (kolom F), dicocokin by Tahun+Bulan — sheet
-  // ini PUNYA histori per tahun/bulan, jadi tetap bisa kematch walau ym
-  // bukan bulan berjalan (walau di app ini praktiknya selalu current month).
-  var iklanRow = (D.iklan||[]).find(function(r){return r.ym===ym;}) || {};
-
-  var target     = rn.forecast || 0;
-  var omset_real = rn.omset_real || 0;
-  var deal_sales = D.kesimpulan.deal_sales || rn.deal_sales || 0;
-  var hari_kerja = D.kesimpulan.hari_kerja || rn.hari_kerja || 0;
-  var hari_aktif = rn.hari_aktif || 0;
-  var actual_spend = iklanRow.biaya_iklan || 0;
-  var forecast   = rn.forecast || 0;
-
-  // Leads for selected month — TIDAK DIUBAH, masih dipakai Tren Harian
-  // (Distribusi Leads) & Cost per Lead & Diagnosa Otomatis.
-  var leadM=D.leads&&D.leads.byMonth?D.leads.byMonth[ym]||{total:0,beli:0,tanya:0,ttb:0,follow_up:0,arsip:0}:{total:0,beli:0,tanya:0,ttb:0,follow_up:0,arsip:0};
-
-  // Filter PIVOT data for selected month — TIDAK DIUBAH
-  var filterByYM=function(arr){
-    return arr.filter(function(r){
-      if(!r.date)return false;
-      var d=r.date instanceof Date?r.date:new Date(r.date);
-      if(isNaN(d))return false;
-      return(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'))===ym;
-    });
-  };
-  var pivot_tx_month=filterByYM(D.pivot_tx||[]);
-  var pivot_month=filterByYM(D.pivot_omzet||[]);
-
-  var transaksi=pivot_tx_month.reduce(function(s,r){return s+(r.count||0);},0);
-  var omzet_pivot_total=pivot_month.reduce(function(s,r){return s+(r.val||0);},0);
-  var aov = omset_real>0&&transaksi>0 ? Math.round(omset_real/transaksi) : 0;
-
-  // ── Jumlah Nota & AOV buat CARD — diambil LANGSUNG dari sheet
-  // KESIMPULAN (B7/B8), BUKAN dari hitungan pivot_tx di atas. Dipisah
-  // biar transaksi/aov yang lama (dipakai closing_rate & Diagnosa
-  // Otomatis di bawah) TETAP JALAN seperti biasa, gak kesenggol.
-  var jumlah_nota_card = D.kesimpulan.jumlah_nota || 0;
-  var aov_card = D.kesimpulan.aov || 0;
-
-  // ── IDEAL AOV — kalau kecepatan transaksi (dari KESIMPULAN B7)
-  // sekarang terus sampai akhir bulan, rata-rata tiap transaksi harus
-  // berapa biar target kecapai? ──
-  var proyeksi_transaksi = hari_kerja>0 ? Math.round(jumlah_nota_card/hari_kerja*hari_aktif) : 0;
-  var ideal_aov = proyeksi_transaksi>0 ? Math.round(target/proyeksi_transaksi) : 0;
-
-  // ── PROYEKSI AKHIR BULAN — kalau kecepatan omzet/deal harian
-  // sekarang terus dipertahanin sampai akhir bulan. Dikali 95% sebagai
-  // toleransi keterlambatan pembayaran (bukan semua Deal langsung cair
-  // tepat waktu).
-  var proyeksi_omzet = hari_kerja>0 ? Math.round(omset_real/hari_kerja*hari_aktif*0.95) : 0;
-  var proyeksi_deal = hari_kerja>0 ? Math.round(deal_sales/hari_kerja*hari_aktif*0.95) : 0;
-
-  // ── POSISI VS TARGET PERUSAHAAN — pakai Target & Hari Kerja dari
-  // tabel FORECAST resmi (ditetapin manajemen), BUKAN dari REPORT V.2.
-  // Section "Target vs Realisasi Omzet" yang lama TIDAK diubah — ini
-  // lapisan pembanding TERPISAH, konsisten satu sumber (target DAN
-  // hari-nya sama-sama dari tabel FORECAST ini).
-  // Posisi Sekarang & Posisi Proyeksi SEKARANG berbasis DEAL SALES
-  // (bukan Omzet Real), konsisten sama keputusan Section 1.
-  var target_perusahaan = D.forecast_bulanan.target_bulan || 0;
-  var hari_aktif_perusahaan = D.forecast_bulanan.hari || 0;
-  var posisi_sekarang_pct = pct(deal_sales, target_perusahaan);
-  var proyeksi_omzet_perusahaan = hari_kerja>0 ? Math.round(omset_real/hari_kerja*hari_aktif_perusahaan) : 0;
-  // Proyeksi Deal Sales vs Target Perusahaan — dikali 95% juga (sama
-  // toleransi kayak Section Proyeksi Akhir Bulan), dipakai bareng buat
-  // card "Posisi Proyeksi" DAN "Kesimpulan & Opsi Tindakan" biar 1
-  // sumber kebenaran, gak dobel angka beda-beda.
-  var proyeksi_deal_perusahaan = hari_kerja>0 ? Math.round(deal_sales/hari_kerja*hari_aktif_perusahaan*0.95) : 0;
-  var posisi_proyeksi_deal_pct = pct(proyeksi_deal_perusahaan, target_perusahaan);
-  var posisi_proyeksi_pct = pct(proyeksi_omzet_perusahaan, target_perusahaan);
-  var proyeksi_transaksi_perusahaan = hari_kerja>0 ? Math.round(jumlah_nota_card/hari_kerja*hari_aktif_perusahaan) : 0;
-
-  // ── NOTA IDEAL SEJAUH INI — kebalikan dari Ideal AOV: "kalau AOV
-  // tetep segini, harusnya UDAH ADA berapa nota sejauh hari yang
-  // berlalu?" (bukan proyeksi akhir bulan, tapi pace-check SEKARANG,
-  // biar apple-to-apple sama Jumlah Nota yang juga angka sejauh ini).
-  var total_nota_ideal_sebulan = aov_card>0 ? Math.round(target_perusahaan/aov_card) : 0;
-  var nota_ideal_sejauh_ini = (total_nota_ideal_sebulan>0&&hari_aktif_perusahaan>0) ? Math.round(total_nota_ideal_sebulan*hari_kerja/hari_aktif_perusahaan) : 0;
-  var ideal_aov_perusahaan = proyeksi_transaksi_perusahaan>0 ? Math.round(target_perusahaan/proyeksi_transaksi_perusahaan) : 0;
-
-  // ── TOTAL LEADS MASUK — sekarang pakai jumlah_nota_card (sumber
-  // KESIMPULAN B7, udah terbukti bener) sebagai basis, BUKAN
-  // "transaksi" (dari data PIVOT lama) yang ternyata sering 0/gak
-  // reliable. Ini ngaruh ke closing_rate juga, bukan cuma teks doang.
-  //
-  // UPDATE: offline_tx sekarang pakai DATA BENERAN dicatet (kolom K,
-  // "Nota per Media - Offline"), BUKAN tebakan residual lagi (dulu:
-  // Jumlah Nota - Beli TDK). Kalau data Nota per Media belum ada buat
-  // bulan ini, fallback otomatis balik ke cara lama (residual).
-  var dataPelangganMonth = filterByYM(D.data_pelanggan||[]);
-  var notaOnlineReal = dataPelangganMonth.reduce(function(s,r){return s+(r.notaOnline||0);},0);
-  var notaOfflineReal = dataPelangganMonth.reduce(function(s,r){return s+(r.notaOffline||0);},0);
-  var hasNotaMediaData = dataPelangganMonth.some(function(r){return r.notaOnline||r.notaOffline;});
-
-  var beli_tdk = leadM.beli || 0;
-  var offline_tx = hasNotaMediaData ? notaOfflineReal : Math.max(0, jumlah_nota_card - beli_tdk);
-  var total_leads_masuk = leadM.total + offline_tx;
-
-  var closing_rate = pct(jumlah_nota_card, total_leads_masuk);
-  var cr_online = pct(leadM.beli, leadM.total);
-
-  // ── BELI ONLINE (versi hitungan) — Jumlah Nota dikurangi Nota
-  // Offline, dibagi Leads TDK. Ini pembilang yang LEBIH akurat dari
-  // status "Beli" manual di TDK (yang rawan lupa di-update CS), soalnya
-  // dua-duanya (Nota & Nota Offline) sama-sama data sistem, bukan input
-  // manual. TDK Beli tetap disimpen buat perbandingan/alarm selisih.
-  var beli_online_hitungan = Math.max(0, jumlah_nota_card - offline_tx);
-  var cr_online_hitungan = pct(beli_online_hitungan, leadM.total);
-  var beliOnlineSelisih = Math.abs(beli_online_hitungan - (leadM.beli||0));
-  var cr_offline = offline_tx > 0 ? 100 : 0;
-
-  // ── VALIDASI SILANG — Online+Offline dari tabel Nota per Media,
-  // dicocokin ke Jumlah Nota resmi (KESIMPULAN B7). Kalau beda jauh,
-  // ada channel yang belum kecover di salah satu sumber.
-  var notaMediaTotal = notaOnlineReal + notaOfflineReal;
-  var notaMediaSelisih = hasNotaMediaData ? Math.abs(notaMediaTotal - jumlah_nota_card) : 0;
-  var notaMediaCocok = hasNotaMediaData ? (notaMediaSelisih <= Math.max(2, Math.round(jumlah_nota_card*0.05))) : null;
-  var cpl = actual_spend>0&&total_leads_masuk>0 ? Math.round(actual_spend/total_leads_masuk) : 0;
-  var achievement_pct = pct(omset_real,target);
-  var deal_sales_pct = pct(deal_sales,target);
-  var gap_omzet = target-deal_sales;
-  var roas = actual_spend>0&&deal_sales>0 ? +(deal_sales/actual_spend).toFixed(1) : 0;
-  var target_harian = hari_kerja>0 ? Math.round(target/hari_kerja) : (target>0?Math.round(target/22):0);
-  var mer = roas;
-  // Sisa hari kerja & target harian yang dipercepat — dipakai buat
-  // rekomendasi strategis (bukan dipakai kartu KPI existing, jadi
-  // aman gak ganggu perhitungan target_harian yang lama).
-  var sisa_hari_kerja = Math.max(0, hari_aktif - hari_kerja);
-  var target_harian_sisa = sisa_hari_kerja>0 && gap_omzet>0 ? Math.round(gap_omzet/sisa_hari_kerja) : 0;
-
-  return{ym:ym,target:target,omset_real:omset_real,deal_sales:deal_sales,deal_sales_pct:deal_sales_pct,hari_kerja:hari_kerja,hari_aktif:hari_aktif,
-    sisa_hari_kerja:sisa_hari_kerja,target_harian_sisa:target_harian_sisa,actual_spend:actual_spend,forecast:forecast,
-    achievement_pct:achievement_pct,gap_omzet:gap_omzet,transaksi:transaksi,aov:aov,
-    total_leads_masuk:total_leads_masuk,offline_tx:offline_tx,
-    closing_rate:closing_rate,cr_online:cr_online,cr_offline:cr_offline,
-    hasNotaMediaData:hasNotaMediaData,notaOnlineReal:notaOnlineReal,notaOfflineReal:notaOfflineReal,
-    beli_online_hitungan:beli_online_hitungan,cr_online_hitungan:cr_online_hitungan,beliOnlineSelisih:beliOnlineSelisih,
-    notaMediaTotal:notaMediaTotal,notaMediaSelisih:notaMediaSelisih,notaMediaCocok:notaMediaCocok,
-    cpl:cpl,roas:roas,mer:mer,target_harian:target_harian,
-    ideal_aov:ideal_aov,proyeksi_transaksi:proyeksi_transaksi,
-    jumlah_nota_card:jumlah_nota_card,aov_card:aov_card,
-    proyeksi_omzet:proyeksi_omzet,proyeksi_deal:proyeksi_deal,
-    target_perusahaan:target_perusahaan,hari_aktif_perusahaan:hari_aktif_perusahaan,
-    posisi_sekarang_pct:posisi_sekarang_pct,posisi_proyeksi_pct:posisi_proyeksi_pct,
-    proyeksi_omzet_perusahaan:proyeksi_omzet_perusahaan,ideal_aov_perusahaan:ideal_aov_perusahaan,
-    nota_ideal_sejauh_ini:nota_ideal_sejauh_ini,
-    proyeksi_deal_perusahaan:proyeksi_deal_perusahaan,posisi_proyeksi_deal_pct:posisi_proyeksi_deal_pct,
-    proyeksi_transaksi_perusahaan:proyeksi_transaksi_perusahaan,
-    leads:leadM,pivot_tx_month:pivot_tx_month,pivot_omzet_month:pivot_month,isCurrentMonth:isCurrentMonth};
-}
-
-// ── SECTION NOTES ────────────────────────────────────
-function secNote(type,ico,msg){
-  return'<div class="sec-note '+type+'">'
-    +'<span class="sec-note-ico">'+ico+'</span>'
-    +'<span>'+msg+'</span></div>';
-}
-
-function renderSectionNotes(d){
-  var ap=d.achievement_pct, ld=d.leads, lt=ld.total||1;
-  var ttbPct=Math.round(pct(ld.ttb,lt));
-
-  // ── 1. TARGET VS REALISASI ──────────────────────────
-  var n1='';
-  if(ap>=100){
-    n1=secNote('ok','🏆','Target sudah terlampaui '+ap+'% — omzet '+fmt(d.omset_real)+' melebihi target '+fmt(d.target)+' sebesar +'+fmt(Math.abs(d.gap_omzet))+'.');
-  } else if(ap>=80&&d.hari_kerja>0){
-    var hariEstimasi=22-d.hari_kerja;
-    var perHari=hariEstimasi>0?Math.round(d.gap_omzet/hariEstimasi):0;
-    n1=secNote('ok','🎯','Pencapaian '+ap+'% dari target. Sisa gap '+fmt(d.gap_omzet)+'.'+(perHari?' Butuh rata-rata '+fmt(perHari)+'/hari di '+hariEstimasi+' hari tersisa.':''));
-  } else if(ap>=60){
-    n1=secNote('warn','⚠️','Pencapaian baru '+ap+'% — masih tertinggal '+fmt(d.gap_omzet)+' dari target. Omzet real '+fmt(d.omset_real)+' dari target '+fmt(d.target)+'.');
-  } else if(ap>0){
-    n1=secNote('bad','🔴','Pencapaian kritis: '+ap+'%. Gap sebesar '+fmt(d.gap_omzet)+' sangat besar relatif terhadap progress bulan ini.');
-  } else {
-    n1=secNote('info','📊','Data target atau omzet real belum tersedia untuk bulan ini.');
-  }
-
-  // ── 2. TRANSAKSI, LEADS & KONVERSI ─────────────────
-  var n2='';
-  if(!ld.total){
-    n2=secNote('info','📊','Data leads belum termuat dari Database TDK bulan ini.');
-  } else if(d.cr_online>=10&&ttbPct<40){
-    n2=secNote('ok','✅','CR Online '+d.cr_online+'% — di atas benchmark 10%. '+ld.beli+' dari '+ld.total+' leads WA berhasil closing. TTB hanya '+ttbPct+'% — kualitas traffic terjaga.');
-  } else if(ttbPct>=50){
-    n2=secNote('bad','👻',ttbPct+'% leads tidak respons sama sekali (TTB = '+ld.ttb+' dari '+ld.total+'). CR Online '+d.cr_online+'%. Traffic masuk tapi tidak menghasilkan interaksi.');
-  } else if(d.cr_online<5){
-    n2=secNote('warn','📉','CR Online rendah: '+d.cr_online+'%. Dari '+ld.total+' leads WA, hanya '+ld.beli+' yang closing. '+ld.tanya+' leads masih di status Tanya — ada potensi yang belum terkonversi.');
-  } else {
-    n2=secNote('info','📋',''+ld.total+' leads WA bulan ini. Beli: '+ld.beli+' · Tanya: '+ld.tanya+' · TTB: '+ld.ttb+'. CR Online: '+d.cr_online+'%. CR Offline: '+(d.cr_offline?'100%':'—')+'.');
-  }
-
-  // ── 3. BIAYA MARKETING & ROAS ───────────────────────
-  var n3='';
-  if(!d.actual_spend){
-    n3=secNote('info','💡','Biaya iklan bulan ini belum diisi. Masukkan angka di kolom input atas untuk menghitung ROAS dan Cost per Lead secara otomatis.');
-  } else if(d.roas>=8){
-    n3=secNote('ok','🚀','ROAS '+d.roas+'x — iklan sangat efisien. Setiap Rp 1 biaya iklan menghasilkan Rp '+d.roas+' omzet. CPL: '+fmt(d.cpl)+' per lead.');
-  } else if(d.roas>=5){
-    n3=secNote('warn','📊','ROAS '+d.roas+'x — di atas minimum 5x tapi belum optimal. CPL: '+fmt(d.cpl)+'. Masih ada ruang untuk meningkatkan efisiensi iklan.');
-  } else {
-    n3=secNote('bad','📉','ROAS hanya '+d.roas+'x — di bawah standar minimum 5x. Total spend '+fmt(d.actual_spend)+' menghasilkan omzet '+fmt(d.omset_real)+'. CPL: '+fmt(d.cpl)+'.');
-  }
-
-  // ── 4. TREN HARIAN ──────────────────────────────────
-  var n4='';
-  var pivot=d.pivot_omzet_month||[];
-  if(!pivot.length){
-    n4=secNote('info','📅','Data tren harian belum tersedia untuk bulan '+ymLabel(d.ym)+'. Pastikan sheet PIVOT sudah diisi.');
-  } else {
-    var hariMeetTarget=pivot.filter(function(r){return(r.val||0)>=(d.target_harian||0);}).length;
-    var totalHari=pivot.length;
-    var totalPivotOmzet=pivot.reduce(function(s,r){return s+(r.val||0);},0);
-    var maxDay=pivot.reduce(function(best,r){return(r.val||0)>(best.val||0)?r:best;},pivot[0]);
-    var maxLabel=maxDay&&maxDay.date instanceof Date?String(maxDay.date.getDate()).padStart(2,'0')+'/'+String(maxDay.date.getMonth()+1).padStart(2,'0'):maxDay?maxDay.label:'?';
-    var pctMeet=Math.round(pct(hariMeetTarget,totalHari));
-    if(pctMeet>=70){
-      n4=secNote('ok','📈',hariMeetTarget+' dari '+totalHari+' hari ('+pctMeet+'%) sudah memenuhi target harian '+fmt(d.target_harian)+'. Hari terbaik: '+maxLabel+' ('+fmt(maxDay?maxDay.val:0)+').');
-    } else if(pctMeet>=40){
-      n4=secNote('warn','📊','Hanya '+hariMeetTarget+' dari '+totalHari+' hari ('+pctMeet+'%) yang mencapai target harian '+fmt(d.target_harian)+'. '+( totalHari-hariMeetTarget)+' hari masih di bawah target. Hari terbaik: '+maxLabel+'.');
-    } else {
-      n4=secNote('bad','📉','Hanya '+hariMeetTarget+' dari '+totalHari+' hari ('+pctMeet+'%) yang melampaui target harian. Mayoritas hari masih di bawah '+fmt(d.target_harian)+'/hari.');
-    }
-  }
-
-  document.getElementById('note-omzet').innerHTML=n1;
-  document.getElementById('note-marketing').innerHTML=n3;
-  document.getElementById('note-chart').innerHTML=n4;
-
-  // ── 5. DONUT Kol I — Intensi Leads ─────────────────
-  var nL1='';
-  if(!ld.total){
-    nL1=secNote('info','📊','Data leads TDK bulan ini belum termuat.');
-  } else {
-    var beliPct=Math.round(pct(ld.beli,lt));
-    var tanyaPct=Math.round(pct(ld.tanya,lt));
-    if(beliPct>=15){
-      nL1=secNote('ok','✅',beliPct+'% leads WA langsung beli ('+ld.beli+' dari '+ld.total+'). '+tanyaPct+'% masih di Tanya — ada '+ld.tanya+' leads yang bisa di-follow up lagi.');
-    } else if(ttbPct>=50){
-      nL1=secNote('bad','👻',ttbPct+'% leads tidak pernah respons (TTB = '+ld.ttb+'). Ini bisa berarti audience tidak relevan atau CS terlambat balas. Hanya '+beliPct+'% yang closing.');
-    } else if(tanyaPct>=40){
-      nL1=secNote('warn','💬',tanyaPct+'% leads masih di status Tanya ('+ld.tanya+' leads). Segmen ini punya intent tapi belum closing. Prioritaskan follow-up ke kelompok ini.');
-    } else {
-      nL1=secNote('info','📋','Beli: '+ld.beli+' ('+beliPct+'%) · Tanya: '+ld.tanya+' ('+tanyaPct+'%) · TTB: '+ld.ttb+' ('+ttbPct+'%).');
-    }
-  }
-
-  // ── 6. DONUT Kol K — Aksi CS ────────────────────────
-  var nL2='';
-  var kolKBeli=ld.beli||0;
-  var kolKTotal=(ld.follow_up||0)+(ld.arsip||0)+kolKBeli||1;
-  var fuPct=Math.round(pct(ld.follow_up,kolKTotal));
-  var arsipPct=Math.round(pct(ld.arsip,kolKTotal));
-  var closePct=Math.round(pct(kolKBeli,kolKTotal));
-  if(!ld.total){
-    nL2=secNote('info','📊','Data aksi CS belum tersedia.');
-  } else if(fuPct>=60){
-    nL2=secNote('warn','📞',''+fuPct+'% leads masih aktif di-follow up ('+ld.follow_up+' leads). Masih banyak pipeline yang bisa dikonversi. '+closePct+'% sudah closing, '+arsipPct+'% diarsipkan.');
-  } else if(arsipPct>=50){
-    nL2=secNote('bad','🗄️',arsipPct+'% leads sudah diarsipkan ('+ld.arsip+' leads). Cek apakah arsip terlalu cepat dilakukan sebelum leads benar-benar tidak prospek.');
-  } else if(closePct>=15){
-    nL2=secNote('ok','💰',''+closePct+'% leads sudah closing ('+kolKBeli+' beli). '+fuPct+'% masih dalam proses follow up.');
-  } else {
-    nL2=secNote('info','📋','Follow Up: '+ld.follow_up+' ('+fuPct+'%) · Arsip: '+ld.arsip+' ('+arsipPct+'%) · Beli/Closing: '+kolKBeli+' ('+closePct+'%).');
-  }
-
-  // note-leads-1/note-leads-2 sudah gak ada elemennya (Distribusi Leads
-  // dihapus) — nL1/nL2 dibiarin sebagai teks yang dihitung tapi gak
-  // ditampilin ke mana-mana, aman gak dipanggil.
-}
-
-// ── RENDER ALL ────────────────────────────────────────
-function renderAll(){
-  var data=getMonthData(SEL_MONTH);
-  var lbl=document.getElementById('month-now-lbl');
-  if(lbl)lbl.textContent=ymLabel(SEL_MONTH);
-  renderKPIs(data);
-  renderAdvisor(data);
-  renderSectionNotes(data);
-  renderCharts(data);
-  renderDiagnose(data);
-}
-
-// ── KPI BLOCKS ────────────────────────────────────────
-// ── STRATEGIC ADVISOR (Meta Ads Expert + Target-Driven Marketer) ──
-// Rekomendasi KEPUTUSAN konkret dari 6 card di "Target vs Realisasi
-// Omzet" — bukan cuma kesimpulan deskriptif, tapi arahan yang bisa
-// langsung dieksekusi hari ini.
-function buildAdvisorRecs(d){
-  var recs=[];
-  var hasSpend = d.actual_spend>0;
-  var hasTarget = d.target>0;
-
-  if(!hasSpend){
-    recs.push({pri:'info',ico:'📋',title:'Data Biaya Iklan Belum Lengkap',
-      body:'Sheet OMZET belum punya angka biaya iklan buat '+ymLabel(d.ym)+'. ROAS gak bisa dihitung tanpa ini — pastikan kolom F (Iklan) sudah terisi biar rekomendasi di bawah bisa lebih presisi.'});
-  }
-
-  // ROAS tinggi + belum capai target → scale up
-  if(hasSpend&&d.roas>=8&&d.deal_sales_pct<100){
-    recs.push({pri:'action',ico:'🚀',title:'Scale Up Budget Iklan Meta',
-      body:'ROAS '+d.roas+'x jauh di atas breakeven — tiap tambahan spend kemungkinan besar masih profitable. Pencapaian Deal Sales baru '+d.deal_sales_pct+'%, gap tersisa '+fmt(Math.abs(d.gap_omzet))+'. Naikkan budget harian 20–30% di ad set dengan CPA terbaik — naikkan bertahap (bukan 2x lipat sekaligus) biar algoritma Meta gak reset learning phase. Pantau CPA & ROAS tiap 2–3 hari.'});
-  }
-  // ROAS sedang + pencapaian rendah → optimasi bertahap
-  else if(hasSpend&&d.roas>=5&&d.roas<8&&d.deal_sales_pct<80){
-    recs.push({pri:'action',ico:'📊',title:'Optimasi Bertahap, Bukan Scale Agresif',
-      body:'ROAS '+d.roas+'x masih sehat tapi belum excellent, pencapaian Deal Sales baru '+d.deal_sales_pct+'%. Naikkan budget bertahap 10–15% per minggu sambil pantau frequency & CPA ketat. Uji 1–2 variasi creative baru buat cari winning ad yang layak didorong lebih agresif sebelum nambah budget besar-besaran.'});
-  }
-  // ROAS rendah → audit
-  if(hasSpend&&d.roas>0&&d.roas<5){
-    recs.push({pri:'warn',ico:'⚠️',title:'Audit Campaign — ROAS di Bawah Standar',
-      body:'ROAS '+d.roas+'x di bawah batas sehat (idealnya ≥5x). Kemungkinan penyebab: audience fatigue (frequency ketinggian), creative burnout, atau targeting kurang presisi. Cek frequency per campaign, refresh creative yang udah tayang lebih dari 2 minggu, dan uji audience/lookalike baru SEBELUM nambah budget lebih jauh.'});
-  }
-
-  // Gap besar + sisa hari sedikit → percepatan
-  if(hasTarget&&d.gap_omzet>0&&d.sisa_hari_kerja>0&&d.sisa_hari_kerja<=7){
-    recs.push({pri:'urgent',ico:'⏰',title:'Percepatan Diperlukan — Waktu Menipis',
-      body:'Sisa '+d.sisa_hari_kerja+' hari kerja buat kejar '+fmt(d.gap_omzet)+'. Target harian perlu naik jadi '+fmt(d.target_harian_sisa)+'/hari (dari '+fmt(d.target_harian)+'/hari normal). Prioritaskan retargeting warm audience (CTWA ke yang pernah engage) buat closing cepat — cold prospecting butuh waktu nurture yang gak keburu di sisa waktu sesempit ini.'});
-  } else if(hasTarget&&d.gap_omzet>0&&d.sisa_hari_kerja>7){
-    recs.push({pri:'action',ico:'🎯',title:'Masih Ada Ruang, Jaga Ritme',
-      body:'Sisa '+d.sisa_hari_kerja+' hari kerja buat kejar '+fmt(d.gap_omzet)+' — target harian perlu '+fmt(d.target_harian_sisa)+'/hari. Masih realistis dikejar dengan ritme spend yang konsisten, gak perlu panik, tapi mulai siapkan campaign CTWA tambahan buat jaga-jaga kalau minggu depan masih di bawah pace.'});
-  }
-
-  // Sudah capai target
-  if(hasTarget&&d.deal_sales_pct>=100){
-    recs.push({pri:'good',ico:'✅',title:'Target Tercapai — Jaga Momentum',
-      body:'Pencapaian Deal Sales '+d.deal_sales_pct+'% dari target '+fmt(d.target)+'. Pertahankan budget spend stabil biar momentum gak drop mendadak, atau evaluasi apakah target bulan depan perlu dinaikkan supaya tim tetap tertantang.'});
-  }
-
-  if(!recs.length){
-    recs.push({pri:'info',ico:'ℹ️',title:'Data Belum Cukup',
-      body:'Lengkapi Target Omzet, Real Omzet, dan Biaya Iklan dulu biar rekomendasi strategis bisa dihitung.'});
-  }
-  return recs;
-}
-
-function renderAdvisor(d){
-  var el=document.getElementById('ads-advisor');
-  if(!el)return;
-  var recs=buildAdvisorRecs(d);
-  el.innerHTML=recs.map(function(r){
-    return '<div class="advisor-item pri-'+r.pri+'">'
-      +'<div class="advisor-ico">'+r.ico+'</div>'
-      +'<div class="advisor-body"><div class="advisor-title">'+esc(r.title)+'</div>'
-      +'<div class="advisor-text">'+esc(r.body)+'</div></div>'
-      +'</div>';
-  }).join('');
-}
-
-function renderKPIs(d){
-  var rCls=d.roas>=8?'good':d.roas>=5?'warn':'bad';
-  var dap=d.deal_sales_pct;
-  var dacls=dap>=100?'good':dap>=80?'warn':'bad';
-
-  // ROW 1: Target vs Deal Sales — Gap Omzet & ROAS sekarang berbasis
-  // Deal Sales (bukan Omzet Real lagi), sesuai keputusan user.
-  document.getElementById('kpi-omzet').innerHTML=
-    kpiCard('🎯','Target Omzet',fmt(d.target),'Bulan '+ymLabel(d.ym),null,null,'hero')+
-    kpiCard('🤝','Deal Sales',fmt(d.deal_sales),'Sheet KESIMPULAN (B5)',null,null,'')+
-    kpiCard('📈','Pencapaian Deal Sales',dap+'%',fmt(d.deal_sales)+' / '+fmt(d.target),null,dap,dacls)+
-    kpiCard('💸','Biaya Iklan',d.actual_spend?fmt(d.actual_spend):'—','Bulan '+ymLabel(d.ym),null,null,'')+
-    kpiCard('📡','ROAS',d.roas?d.roas+'x':'—','Deal Sales ÷ Biaya Iklan',
-      d.roas>0?(d.roas>=8?'✅ Excellent':d.roas>=5?'⚠️ Average':'❌ Poor'):null,null,rCls)+
-    kpiCard('📉','Gap Omzet',fmt(Math.abs(d.gap_omzet)),
-      d.gap_omzet<=0?'✅ Deal Sales sudah melampaui target':'Sisa yang harus dicapai (vs Deal Sales)',
-      d.gap_omzet<=0?'▲ +'+fmt(Math.abs(d.gap_omzet)):null,null,d.gap_omzet<=0?'good':'bad');
-}
-
-// ── MARKETING KPI ROW (sisa: Cost per Lead, Target Harian, Real Harian) ──
-function renderMarketingKPIs(d){
-  document.getElementById('kpi-marketing').innerHTML=
-    kpiCard('💳','Cost per Lead',d.cpl?fmt(d.cpl):'—',d.actual_spend?'dari Rp '+d.actual_spend.toLocaleString('id-ID')+' spend':'Biaya iklan belum ada',null,null,'')+
-    kpiCard('📈','Target Harian',d.target_harian?fmt(d.target_harian):'—','Per hari kerja',null,null,'')+
-    kpiCard('🔄','Real Harian Avg',d.hari_kerja>0?fmt(Math.round(d.deal_sales/d.hari_kerja)):'—',
-      d.hari_kerja>0?'vs target '+fmt(d.target_harian)+' (Deal Sales B5 ÷ Hari Kerja)':'',null,
-      d.hari_kerja>0&&d.target_harian>0?pct(d.deal_sales/d.hari_kerja,d.target_harian):null,'');
-  renderAOVKPIs(d);
-  renderProyeksiKPIs(d);
-}
-
-// ── VALIDASI NOTA PER MEDIA — bandingin Online+Offline (dari data
-// beneran dicatet) vs Jumlah Nota resmi (KESIMPULAN B7). Kalau beda
-// jauh, kasih tau — ada kemungkinan channel lain yang belum kecover.
-function renderNotaMediaValidasi(d){
-  var el=document.getElementById('nota-media-validasi');
-  if(!d.hasNotaMediaData){
-    el.innerHTML='';
-    return;
-  }
-  if(d.notaMediaCocok){
-    el.innerHTML='<div style="font-size:10.5px;color:var(--mut);background:var(--card2);border-radius:10px;padding:9px 12px;margin-bottom:14px;line-height:1.6">✅ Validasi: Online ('+d.notaOnlineReal.toLocaleString('id-ID')+') + Offline ('+d.notaOfflineReal.toLocaleString('id-ID')+') = '+d.notaMediaTotal.toLocaleString('id-ID')+' — cocok sama Jumlah Nota resmi ('+d.jumlah_nota_card.toLocaleString('id-ID')+').</div>';
-  } else {
-    el.innerHTML='<div style="font-size:10.5px;color:var(--red);background:var(--red-l);border:1px solid #FECACA;border-radius:10px;padding:9px 12px;margin-bottom:14px;line-height:1.6">⚠️ Selisih terdeteksi: Online+Offline dari tabel Nota per Media = '+d.notaMediaTotal.toLocaleString('id-ID')+', tapi Jumlah Nota resmi (KESIMPULAN B7) = '+d.jumlah_nota_card.toLocaleString('id-ID')+' (beda '+d.notaMediaSelisih.toLocaleString('id-ID')+'). Kemungkinan ada channel closing yang belum kecatet di salah satu sumber — cek manual.</div>';
-  }
-}
-
-function renderAOVKPIs(d){
-  document.getElementById('kpi-aov').innerHTML=
-    kpiCard('🧾','Jumlah Nota',d.jumlah_nota_card?d.jumlah_nota_card.toLocaleString('id-ID'):'—',
-      d.nota_ideal_sejauh_ini?'Ideal sejauh ini: '+d.nota_ideal_sejauh_ini.toLocaleString('id-ID')+' nota ('+(d.jumlah_nota_card>=d.nota_ideal_sejauh_ini?'✅ on pace':'⚠️ kurang '+(d.nota_ideal_sejauh_ini-d.jumlah_nota_card).toLocaleString('id-ID'))+')':'Bulan '+ymLabel(d.ym),
-      null,null,d.nota_ideal_sejauh_ini?(d.jumlah_nota_card>=d.nota_ideal_sejauh_ini?'good':'bad'):'')+
-    kpiCard('💵','AOV (Average Order Value)',d.aov_card?fmt(d.aov_card):'—','Sheet KESIMPULAN',null,null,'')+
-    kpiCard('🎯','Ideal AOV (vs Target Perusahaan)',d.ideal_aov_perusahaan?fmt(d.ideal_aov_perusahaan):'—',
-      d.proyeksi_transaksi_perusahaan?'Estimasi '+d.proyeksi_transaksi_perusahaan.toLocaleString('id-ID')+' nota s/d akhir bulan':'Butuh data hari kerja',null,null,'hero')+
-    kpiCard('📲','Closing Rate Online',d.leads.total>0?d.cr_online+'%':'—',
-      d.leads.total>0?d.leads.beli.toLocaleString('id-ID')+' Total Leads Online Beli / '+d.leads.total.toLocaleString('id-ID')+' Total Leads Online (TDK)':'Belum ada data leads TDK',
-      null,null,d.leads.total>0?(d.cr_online>=20?'good':d.cr_online>=15?'warn':'bad'):'');
-  // renderNotaMediaValidasi(d); — disembunyiin sementara, nempel sama
-  // konsep "data Offline" yang belum siap jadi metrik resmi (bakal
-  // dipasang lagi bareng Closing Rate Offline nanti)
-  renderAOVKesimpulan(d);
-}
-
-// ── KESIMPULAN & OPSI TINDAKAN — AOV vs Target Perusahaan ──
-// Logic-nya: bandingin AOV aktual sekarang vs Ideal AOV yang dihitung
-// khusus buat capai Target Perusahaan (bukan target lama). Dari situ
-// ditentuin: masalahnya di NILAI per transaksi (perlu upsell) atau di
-// VOLUME transaksi (perlu lebih banyak leads/follow-up), atau dua-duanya.
-function renderAOVKesimpulan(d){
-  var el=document.getElementById('aov-kesimpulan');
-  var items=[];
-
-  if(!d.target_perusahaan||!d.aov_card||!d.ideal_aov_perusahaan){
-    items.push({pri:'info',ico:'📋',title:'Data Belum Lengkap',
-      body:'Target Perusahaan, AOV, atau Jumlah Nota belum semuanya kebaca dari sheet — kesimpulan belum bisa dihitung akurat.'});
-    el.innerHTML=items.map(function(it){
-      return '<div class="advisor-item pri-'+it.pri+'"><div style="font-size:17px;flex-shrink:0">'+it.ico+'</div><div><div style="font-size:12px;font-weight:800;color:var(--txt);margin-bottom:3px">'+esc(it.title)+'</div><div style="font-size:11px;color:var(--txt2);line-height:1.6">'+esc(it.body)+'</div></div></div>';
-    }).join('');
-    return;
-  }
-
-  var aov=d.aov_card, ideal=d.ideal_aov_perusahaan, posisiProyeksi=d.posisi_proyeksi_deal_pct;
-  var gapPerusahaan=d.target_perusahaan-(d.proyeksi_deal_perusahaan||0);
-  var aovKurang = aov<ideal;
-  var selisihPct = ideal>0 ? Math.round(Math.abs(ideal-aov)/ideal*100) : 0;
-
-  // Skenario nilai per transaksi
-  if(aovKurang){
-    items.push({pri:'action',ico:'📈',title:'Dorong Nilai per Transaksi (Upsell)',
-      body:'AOV sekarang Rp'+fmt(aov)+' masih '+selisihPct+'% di bawah Ideal AOV Rp'+fmt(ideal)+' buat capai Target Perusahaan. Prioritas: UPSELL & BUNDLING tiap closing — tawarin paket lebih besar atau produk komplementer, bukan nambah leads baru dulu.'});
-  } else {
-    items.push({pri:'good',ico:'✅',title:'AOV Sudah di Atas Ideal',
-      body:'AOV sekarang Rp'+fmt(aov)+' udah '+selisihPct+'% di atas Ideal AOV Rp'+fmt(ideal)+'. Nilai per transaksi udah sehat — kalau proyeksi masih kurang, fokusin ke VOLUME transaksi, bukan harga.'});
-  }
-
-  // Skenario posisi keseluruhan
-  if(posisiProyeksi<100){
-    items.push({pri:'urgent',ico:'⚠️',title:'Proyeksi Masih di Bawah Target Perusahaan',
-      body:'Proyeksi cuma '+posisiProyeksi+'% dari Target Perusahaan kalau kecepatan sekarang dipertahanin (gap Rp'+fmt(Math.abs(gapPerusahaan))+'). '+(aovKurang?'Aksi tercepat: naikkan AOV lewat upsell di closing yang udah ada.':'Aksi tercepat: tambah volume transaksi lewat follow-up leads yang lebih agresif.')});
-  } else {
-    items.push({pri:'good',ico:'🎯',title:'On Track ke Target Perusahaan',
-      body:'Proyeksi udah '+posisiProyeksi+'% dari Target Perusahaan. Pertahanin ritme AOV & volume transaksi yang sekarang.'});
-  }
-
-  // Skenario Closing Rate Online — sesuai rule resmi PDF "Closing Rate
-  // New Lead": target ideal 20-25%, standar warna Merah <15% / Kuning
-  // 15-19% / Hijau ≥20%. 3 poin cek kalau di bawah target itu PERSIS
-  // dari PDF, bukan saya karang sendiri.
-  if(d.leads.total>0){
-    var cr=d.cr_online;
-    if(cr>=20){
-      items.push({pri:'good',ico:'✅',title:'Closing Rate Online Sehat',
-        body:'Closing Rate Online '+cr+'% — udah di atas target ideal (20-25%). Lead baru bergerak jadi pembeli dengan baik. Pertahankan cara CS closing yang sekarang.'});
-    } else if(cr>=15){
-      items.push({pri:'warn',ico:'⚠️',title:'Closing Rate Online Mendekati Target',
-        body:'Closing Rate Online '+cr+'% — kuning, mendekati target ideal (20-25%) tapi belum tercapai. Cek: (1) kualitas lead yang masuk, (2) cara CS menawarkan produk, (3) alasan lead tidak jadi beli.'});
-    } else {
-      items.push({pri:'urgent',ico:'🚨',title:'Closing Rate Online di Bawah Target',
-        body:'Closing Rate Online '+cr+'% — merah, di bawah target ideal (20-25%). Wajib cek: (1) kualitas lead yang masuk, (2) cara CS menawarkan produk, (3) alasan lead tidak jadi beli. Fokus: lead baru harus bergerak jadi pembeli.'});
-    }
-  }
-
-  el.innerHTML=items.map(function(it){
-    return '<div class="advisor-item pri-'+it.pri+'"><div style="font-size:17px;flex-shrink:0">'+it.ico+'</div><div><div style="font-size:12px;font-weight:800;color:var(--txt);margin-bottom:3px">'+esc(it.title)+'</div><div style="font-size:11px;color:var(--txt2);line-height:1.6">'+esc(it.body)+'</div></div></div>';
-  }).join('');
-}
-
-function renderProyeksiKPIs(d){
-  var omzetCls = d.proyeksi_omzet>0 ? (d.proyeksi_omzet>=d.target?'good':d.proyeksi_omzet>=d.target*0.8?'warn':'bad') : '';
-  var dealCls = d.proyeksi_deal>0 ? (d.proyeksi_deal>=d.target?'good':d.proyeksi_deal>=d.target*0.8?'warn':'bad') : '';
-  var omzetPct = d.target>0&&d.proyeksi_omzet>0 ? pct(d.proyeksi_omzet,d.target) : null;
-  var dealPct = d.target>0&&d.proyeksi_deal>0 ? pct(d.proyeksi_deal,d.target) : null;
-  document.getElementById('kpi-proyeksi').innerHTML=
-    kpiCard('💰','Proyeksi Omzet Real',d.proyeksi_omzet?fmt(d.proyeksi_omzet):'—',
-      omzetPct!==null?omzetPct+'% dari target (sudah ×95% toleransi telat bayar)':'Butuh data hari kerja',null,null,omzetCls)+
-    kpiCard('🤝','Proyeksi Deal Sales',d.proyeksi_deal?fmt(d.proyeksi_deal):'—',
-      dealPct!==null?dealPct+'% dari target (sudah ×95% toleransi telat bayar)':'Butuh data hari kerja',null,null,dealCls);
-  renderTargetPerusahaanKPIs(d);
-}
-
-function renderTargetPerusahaanKPIs(d){
-  var hasTarget = d.target_perusahaan>0;
-  var sekarangCls = d.posisi_sekarang_pct>=90?'good':d.posisi_sekarang_pct>=70?'warn':'bad';
-  var proyeksiCls = d.posisi_proyeksi_deal_pct>=100?'good':d.posisi_proyeksi_deal_pct>=80?'warn':'bad';
-  document.getElementById('kpi-target-perusahaan').innerHTML=
-    kpiCard('🏢','Target Perusahaan',hasTarget?fmt(d.target_perusahaan):'—',
-      hasTarget?'Bulan '+ymLabel(d.ym)+' · '+d.hari_aktif_perusahaan+' hari kerja':'Data belum ketemu di tabel FORECAST',null,null,'hero')+
-    kpiCard('📍','Posisi Sekarang',hasTarget?d.posisi_sekarang_pct+'%':'—',
-      hasTarget?fmt(d.deal_sales)+' / '+fmt(d.target_perusahaan)+' (Deal Sales)':'',null,hasTarget?d.posisi_sekarang_pct:null,hasTarget?sekarangCls:'')+
-    kpiCard('🔭','Posisi Proyeksi',hasTarget&&d.proyeksi_deal_perusahaan?d.posisi_proyeksi_deal_pct+'%':'—',
-      hasTarget&&d.proyeksi_deal_perusahaan?'Proyeksi Deal '+fmt(d.proyeksi_deal_perusahaan)+' / '+fmt(d.target_perusahaan)+' (sudah ×95%)':'Butuh data hari kerja',null,
-      hasTarget?d.posisi_proyeksi_deal_pct:null,hasTarget&&d.proyeksi_deal_perusahaan?proyeksiCls:'')+
-    kpiCard('🎯','Ideal AOV (vs Target Perusahaan)',d.ideal_aov_perusahaan?fmt(d.ideal_aov_perusahaan):'—',
-      d.proyeksi_transaksi_perusahaan?'Estimasi '+d.proyeksi_transaksi_perusahaan.toLocaleString('id-ID')+' nota s/d akhir bulan':'Butuh data hari kerja',null,null,'');
-}
-
-// ── CHARTS ────────────────────────────────────────────
-// Register datalabels sekali saja
-Chart.register(ChartDataLabels);
-
-// Destroy by canvas ID (reliable di Chart.js 4.x)
-function destroyChart(id){
-  var el=document.getElementById(id);
-  if(!el)return;
-  var c=Chart.getChart(el);
-  if(c)c.destroy();
-}
-
-function renderCharts(d){
-  var isDark=document.body.classList.contains('dark');
-  var grid=isDark?'rgba(255,255,255,.06)':'rgba(0,0,0,.05)';
-  var tc=isDark?'#6B6E7A':'#7A7E8A';
-
-  // ── CHART 1: Omzet Harian vs Target (BATANG) ─────
-  var pivot=d.pivot_omzet_month||[];
-  var labels=pivot.map(function(r){
-    if(r.date instanceof Date)return String(r.date.getDate()).padStart(2,'0')+'/'+String(r.date.getMonth()+1).padStart(2,'0');
-    return String(r.label||'').slice(0,5);
-  });
-  var actuals=pivot.map(function(r){return r.val||0;});
-  var targets=labels.map(function(){return d.target_harian||0;});
-  document.getElementById('chart-badge-1').textContent=labels.length+(labels.length?' hari data':' — belum ada data harian');
-
-  // ── Omset Pelanggan (kolom JUMLAH) — dicocokin per tanggal ke
-  // label yang SAMA kayak Omzet Harian di atas (bukan sumber
-  // pivot_omzet, tapi tetep dipetain biar sejajar di chart yang sama).
-  var pelangganByDate={};
-  (D.data_pelanggan||[]).forEach(function(r){
-    var key=r.date.getFullYear()+'-'+String(r.date.getMonth()+1).padStart(2,'0')+'-'+String(r.date.getDate()).padStart(2,'0');
-    pelangganByDate[key]=r.jumlah;
-  });
-  var pelangganData=pivot.map(function(r){
-    if(!(r.date instanceof Date)) return 0;
-    var key=r.date.getFullYear()+'-'+String(r.date.getMonth()+1).padStart(2,'0')+'-'+String(r.date.getDate()).padStart(2,'0');
-    return pelangganByDate[key]||0;
-  });
-  var hasPelangganDaily=Object.keys(pelangganByDate).length>0;
-
-  destroyChart('chart-daily');
-  var chartDailyDatasets=[
-    {
-      label:'Omzet Aktual',
-      data:actuals,
-      backgroundColor:'rgba(245,197,24,.75)',
-      borderColor:'#C89B00',
-      borderWidth:1.5,borderRadius:4,order:2,
-    },
+  const m = RATES.meta;
+  const steps = [
+    {label:'Impression → Klik/CTR', actual: impression>0?klikCtr/impression:null, ideal: m.rateKlikCtrImpression, aVal:klikCtr, bVal:impression, aLbl:'Klik/CTR', bLbl:'Impression'},
+    {label:'Klik/CTR → LP View', actual: klikCtr>0?lpView/klikCtr:null, ideal: m.rateLpViewKlikCtr, aVal:lpView, bVal:klikCtr, aLbl:'LP View', bLbl:'Klik/CTR'},
+    {label:'LP View → Klik CTA', actual: lpView>0?klikCta/lpView:null, ideal: m.rateKlikCtaLpView, aVal:klikCta, bVal:lpView, aLbl:'Klik CTA', bLbl:'LP View'},
+    {label:'Klik CTA → Leads', actual: klikCta>0?leads/klikCta:null, ideal: m.rateLeadsKlikCta, aVal:leads, bVal:klikCta, aLbl:'Leads', bLbl:'Klik CTA'},
+    {label:'Leads → Survey', actual: leads>0?survey/leads:null, ideal: m.rateSurveyLeads, aVal:survey, bVal:leads, aLbl:'Survey', bLbl:'Leads'},
+    {label:'Survey → Deal', actual: survey>0?deal/survey:null, ideal: m.rateDealSurvey, aVal:deal, bVal:survey, aLbl:'Deal', bLbl:'Survey'},
   ];
-  if(hasPelangganDaily){
-    chartDailyDatasets.push({
-      label:'Omset Pelanggan (Umum+Tukang+Proyek)',
-      data:pelangganData,
-      backgroundColor:'rgba(139,92,246,.7)',borderColor:'#8B5CF6',
-      borderWidth:1.5,borderRadius:4,order:2,
-    });
-  }
-  chartDailyDatasets.push({
-    type:'line',
-    label:'Target Harian',
-    data:targets,
-    borderColor:'rgba(220,38,38,.8)',
-    borderDash:[5,4],borderWidth:2,
-    pointRadius:0,fill:false,tension:0,order:1,
-  });
-  new Chart(document.getElementById('chart-daily').getContext('2d'),{
-    type:'bar',
-    data:{
-      labels:labels,
-      datasets:chartDailyDatasets
-    },
-    options:{
-      responsive:true,maintainAspectRatio:true,
-      plugins:{
-        datalabels:{display:false},
-        legend:{position:'bottom',labels:{font:{size:10},boxWidth:14,padding:10,color:tc}},
-        tooltip:{callbacks:{label:function(c){
-          if(c.dataset.type==='line')return' Target: '+fmt(c.parsed.y);
-          return' Omzet: '+fmt(c.parsed.y);
-        }}}
-      },
-      scales:{
-        x:{grid:{color:grid},ticks:{color:tc,font:{size:9},maxTicksLimit:16}},
-        y:{grid:{color:grid},ticks:{color:tc,font:{size:9},callback:function(v){return fmt(v);}},beginAtZero:true}
-      }
-    }
+
+  steps.forEach(function(s){
+    s.ratio = (s.actual!==null && s.ideal>0) ? s.actual/s.ideal : null;
+    s.cls = classifyRatio(s.ratio);
   });
 
-  // ── Data leads (masih dipakai Cost per Lead & Diagnosa Otomatis,
-  // TAPI chart-badge-2 udah gak ada elemennya karena Distribusi Leads
-  // dihapus — jadi baris innerHTML-nya dihapus, sisanya dibiarin) ──
-  var ld=d.leads||{total:0,beli:0,tanya:0,ttb:0,follow_up:0,arsip:0};
-  var ldTotal=ld.total||1;
-  var kolKBeli=ld.beli||0;
-  var kolKTotal=(ld.follow_up||0)+(ld.arsip||0)+kolKBeli||1;
+  const rowsHTML = steps.map(function(s){
+    return `
+      <div class="compare-row">
+        <div class="compare-hd">
+          <span class="compare-lbl">${s.label}</span>
+          <span class="compare-badge ${s.cls||'warn'}">${badgeText(s.ratio)}</span>
+        </div>
+        <div class="compare-nums">Aktual: <b>${(s.actual!==null?pct1(s.actual):'—')}</b> vs Ideal: <b>${pct1(s.ideal)}</b> (${s.bVal.toLocaleString('id-ID')} ${s.bLbl} → ${s.aVal.toLocaleString('id-ID')} ${s.aLbl})</div>
+      </div>
+    `;
+  }).join('');
 
-  function makeDonut(canvasId,labels,data,colors,total){
-    destroyChart(canvasId);
-    new Chart(document.getElementById(canvasId).getContext('2d'),{
-      type:'doughnut',
-      data:{
-        labels:labels,
-        datasets:[{
-          data:data,
-          backgroundColor:colors,
-          borderColor:isDark?'#1E2028':'#ffffff',
-          borderWidth:2,hoverOffset:5,
-        }]
-      },
-      options:{
-        responsive:true,maintainAspectRatio:true,cutout:'48%',
-        plugins:{
-          legend:{position:'bottom',labels:{font:{size:9.5},boxWidth:11,padding:7,color:tc}},
-          tooltip:{callbacks:{label:function(c){
-            var p=total>0?Math.round(c.parsed/total*100):0;
-            return' '+c.label+': '+c.parsed+' ('+p+'%)';
-          }}},
-          datalabels:{
-            color:'#fff',
-            textShadowBlur:4,textShadowColor:'rgba(0,0,0,.6)',
-            font:{weight:'bold',size:11},
-            anchor:'center',align:'center',
-            formatter:function(val,ctx){
-              if(!val||val===0)return null;
-              var p=total>0?Math.round(val/total*100):0;
-              if(p<5)return null;
-              return val+'\n'+p+'%';
-            }
-          }
-        }
-      }
-    });
-  }
+  // ── SEMUA titik MERAH dapet Action Plan sendiri-sendiri (bukan
+  // cuma 1 "paling bocor"), pakai playbook expert di atas.
+  const redSteps = steps.filter(function(s){ return s.cls==='bad'; });
 
-  // Distribusi Leads (2 diagram bulat) sudah dihapus dari dashboard —
-  // gak dipanggil lagi di sini. Perhitungan ld/ldTotal/kolKBeli/
-  // kolKTotal di atas sengaja dibiarin (masih aman, gak dipanggil ke
-  // mana-mana, gak ganggu apapun) biar gak perlu bongkar logic Leads
-  // yang lebih luas di Diagnosa Otomatis & Cost per Lead.
-
-  renderMarketingKPIs(d);
-  renderDealKasirChart(d);
-  renderWeeklyChart(d);
-}
-
-// ── DEAL VS KASIR HARIAN ───────────────────────────────
-function renderDealKasirChart(d){
-  var rows=D.deal_kasir||[];
-  destroyChart('chart-dealkasir');
-
-  if(!rows.length){
-    document.getElementById('dealkasir-empty').style.display='block';
-    document.getElementById('chart-dealkasir').style.display='none';
-    document.getElementById('dealkasir-summary').innerHTML='';
-    document.getElementById('dealkasir-alert').innerHTML='';
-    document.getElementById('dealkasir-checklist').innerHTML='';
-    document.getElementById('chart-badge-dealkasir').textContent='Belum ada data';
-    return;
-  }
-  document.getElementById('dealkasir-empty').style.display='none';
-  document.getElementById('chart-dealkasir').style.display='block';
-  document.getElementById('chart-badge-dealkasir').textContent=rows.length+' hari data';
-
-  var totalDeal=rows.reduce(function(s,r){return s+r.deal;},0);
-  var totalKasir=rows.reduce(function(s,r){return s+r.kasir;},0);
-  var gapDays=rows.filter(function(r){return r.deal>r.kasir;});
-  var totalGap=gapDays.reduce(function(s,r){return s+(r.deal-r.kasir);},0);
-
-  document.getElementById('dealkasir-summary').innerHTML=
-    '<div class="dk-stat"><span class="dk-stat-lbl">Total Deal</span><span class="dk-stat-val">'+fmt(totalDeal)+'</span></div>'
-    +'<div class="dk-stat"><span class="dk-stat-lbl">Total Kasir</span><span class="dk-stat-val">'+fmt(totalKasir)+'</span></div>'
-    +'<div class="dk-stat"><span class="dk-stat-lbl">Hari Ada Gap</span><span class="dk-stat-val" style="color:'+(gapDays.length>0?'var(--red)':'var(--grn)')+'">'+gapDays.length+' / '+rows.length+'</span></div>';
-
-  var alertEl=document.getElementById('dealkasir-alert');
-  if(gapDays.length>0){
-    alertEl.innerHTML='<div class="gap-alert">'
-      +'<div class="gap-alert-ico">⚠️</div>'
-      +'<div><div class="gap-alert-title">'+gapDays.length+' hari Deal lebih besar dari Kasir — total gap '+fmt(totalGap)+'</div>'
-      +'<div class="gap-alert-sub">Artinya ada nilai deal yang belum masuk sebagai uang cash di hari yang sama. Cek 5 kemungkinan penyebab di bawah buat evaluasi.</div></div>'
-      +'</div>';
+  var advisorHTML = '';
+  if(redSteps.length){
+    advisorHTML = `
+      <div class="advisor-section">
+        <div class="advisor-section-title">🎯 Meta Ads Expert Advisor — Action Plan</div>
+        <div class="advisor-section-sub">${redSteps.length} titik butuh perbaikan segera. Urutin dari yang paling dekat ke closing (paling mahal kalau dibiarin).</div>
+        ${redSteps.map(function(s){
+          const pb = ACTION_PLAYBOOK[s.label];
+          return `
+            <div class="leak-box">
+              <div class="leak-title">🚨 ${s.label} — ${badgeText(s.ratio)}</div>
+              <div class="leak-kategori">${pb.kategori}</div>
+              <div class="leak-body">${pb.diagnosis}</div>
+              <div class="leak-actions">
+                ${pb.actions.map(function(a){ return `<div class="leak-action-item">✓ ${a}</div>`; }).join('')}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
   } else {
-    alertEl.innerHTML='<div class="gap-alert ok">'
-      +'<div class="gap-alert-ico">✅</div>'
-      +'<div><div class="gap-alert-title">Gak ada gap — semua Deal sudah masuk Kasir di hari yang sama</div></div>'
-      +'</div>';
+    advisorHTML = `
+      <div class="leak-box good">
+        <div class="leak-title">✅ Semua Tahap Sehat</div>
+        <div class="leak-body">Gak ada titik yang di bawah 60% dari rate ideal. Funnel kamu jalan sesuai rencana — pertahankan.</div>
+      </div>
+    `;
   }
 
-  var ctx=document.getElementById('chart-dealkasir').getContext('2d');
-  var labels=rows.map(function(r){return r.date.getDate()+'/'+(r.date.getMonth()+1);});
-  new Chart(ctx,{
-    type:'line',
-    data:{labels:labels,datasets:[
-      {label:'Deal',data:rows.map(function(r){return r.deal;}),borderColor:'#F59E0B',backgroundColor:'rgba(245,158,11,.08)',fill:true,tension:.3,pointRadius:3},
-      {label:'Kasir',data:rows.map(function(r){return r.kasir;}),borderColor:'#16A34A',backgroundColor:'rgba(22,163,74,.08)',fill:true,tension:.3,pointRadius:3},
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:10}}},datalabels:{display:false}},
-      scales:{y:{beginAtZero:true,ticks:{callback:function(v){return fmt(v);}}}}}
+  document.getElementById('result-d').innerHTML = rowsHTML + advisorHTML;
+  document.getElementById('result-d').classList.add('show');
+}
+
+// ── PLAYBOOK SALES EXPERT — buat 3 tahap funnel Follow Up (Database/
+// Repeat/Bulan Ini). Konteksnya beda dari Meta Ads: ini soal DISIPLIN
+// OUTBOUND & RELATIONSHIP, bukan soal iklan/landing page.
+const FU_ACTION_PLAYBOOK = {
+  'Jumlah Leads → Leads Respon': {
+    kategori: 'Masalah Cara & Waktu Follow Up',
+    diagnosis: 'Leads dihubungi tapi gak direspon — biasanya soal TIMING atau PENDEKATAN yang kurang pas, bukan soal kualitas leads-nya.',
+    actions: [
+      'Cek jam follow up — coba variasi pagi/siang/sore, hindari jam sibuk orang kerja',
+      'Review pesan pembuka — personal (sebut nama/riwayat) atau template generik?',
+      'Pastikan SOP follow up H+1/H+3/H+7 beneran dijalankan, bukan cuma sekali coba',
+      'Coba ganti channel — kalau WA gak dibales, coba telpon langsung'
+    ]
+  },
+  'Leads Respon → Closing Survey': {
+    kategori: 'Masalah Kualifikasi & Penggalian Kebutuhan',
+    diagnosis: 'Orang udah respon, tapi gak lanjut ke tahap serius — pertanda kebutuhan belum tergali atau penawaran awal kurang nyambung.',
+    actions: [
+      'Gali kebutuhan lebih dalam — jangan buru-buru nawarin sebelum ngerti maunya apa',
+      'Review penawaran awal — udah relevan sama histori/kebutuhan mereka?',
+      'Cek ulang kualitas database — apakah leads ini emang masih relevan/berminat?',
+      'Follow up kedua kalau respon pertama dingin — jangan nyerah di 1 kali chat'
+    ]
+  },
+  'Closing Survey → Closing Deal': {
+    kategori: 'Masalah Closing & Trust',
+    diagnosis: 'Udah sampai tahap serius, tapi gagal closing — di channel Database/Repeat ini biasanya soal TRUST dan penawaran yang kurang spesial.',
+    actions: [
+      'Review handling keberatan — harga, waktu, atau kebutuhan yang berubah?',
+      'Siapkan penawaran khusus buat database/repeat (loyalty, diskon returning customer)',
+      'Cek kecepatan closing — ada gak kompetitor yang keduluan follow up mereka?',
+      'Evaluasi relationship — apakah komunikasi sebelumnya ninggalin kesan baik?'
+    ]
+  },
+};
+
+function runCalcE(){
+  const tipe = document.getElementById('input-e-tipe').value;
+  const leads = numRupiah('input-e-leads');
+  const respon = numRupiah('input-e-respon');
+  const survey = numRupiah('input-e-survey');
+  const deal = numRupiah('input-e-deal');
+
+  const r = rateForTipe(tipe);
+  const steps = [
+    {label:'Jumlah Leads → Leads Respon', actual: leads>0?respon/leads:null, ideal: r.rateLeadsResponLeadsFu, aVal:respon, bVal:leads, aLbl:'Leads Respon', bLbl:'Jumlah Leads'},
+    {label:'Leads Respon → Closing Survey', actual: respon>0?survey/respon:null, ideal: r.rateSurveyLeadsRespon, aVal:survey, bVal:respon, aLbl:'Closing Survey', bLbl:'Leads Respon'},
+    {label:'Closing Survey → Closing Deal', actual: survey>0?deal/survey:null, ideal: r.rateDealSurvey, aVal:deal, bVal:survey, aLbl:'Closing Deal', bLbl:'Closing Survey'},
+  ];
+
+  steps.forEach(function(s){
+    s.ratio = (s.actual!==null && s.ideal>0) ? s.actual/s.ideal : null;
+    s.cls = classifyRatio(s.ratio);
   });
 
-  document.getElementById('dealkasir-checklist').innerHTML=
-    '<div class="checklist-ref">'
-    +'<div class="checklist-ref-title">📋 Kalau Ada Gap, Cek 5 Kemungkinan Ini</div>'
-    +['Pengiriman tidak selesai hari ini','Belum diinput oleh Kasir hari ini','Produk belum ada','Konsumen request kirim tanggal tertentu','Dokumen belum lengkap (termasuk nunggu invoice)']
-      .map(function(item,i){return '<div class="checklist-ref-item"><span class="checklist-ref-num">'+(i+1)+'</span>'+esc(item)+'</div>';}).join('')
-    +'</div>';
+  const rowsHTML = steps.map(function(s){
+    return `
+      <div class="compare-row">
+        <div class="compare-hd">
+          <span class="compare-lbl">${s.label}</span>
+          <span class="compare-badge ${s.cls||'warn'}">${badgeText(s.ratio)}</span>
+        </div>
+        <div class="compare-nums">Aktual: <b>${(s.actual!==null?pct1(s.actual):'—')}</b> vs Ideal: <b>${pct1(s.ideal)}</b> (${s.bVal.toLocaleString('id-ID')} ${s.bLbl} → ${s.aVal.toLocaleString('id-ID')} ${s.aLbl})</div>
+      </div>
+    `;
+  }).join('');
+
+  const redSteps = steps.filter(function(s){ return s.cls==='bad'; });
+  var advisorHTML = '';
+  if(redSteps.length){
+    advisorHTML = `
+      <div class="advisor-section">
+        <div class="advisor-section-title">📞 Sales Management Expert Advisor — Action Plan</div>
+        <div class="advisor-section-sub">${redSteps.length} titik butuh perbaikan di ${tipeLabel(tipe)}. Fokus ke yang paling dekat closing duluan.</div>
+        ${redSteps.map(function(s){
+          const pb = FU_ACTION_PLAYBOOK[s.label];
+          return `
+            <div class="leak-box">
+              <div class="leak-title">🚨 ${s.label} — ${badgeText(s.ratio)}</div>
+              <div class="leak-kategori">${pb.kategori}</div>
+              <div class="leak-body">${pb.diagnosis}</div>
+              <div class="leak-actions">
+                ${pb.actions.map(function(a){ return `<div class="leak-action-item">✓ ${a}</div>`; }).join('')}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  } else {
+    advisorHTML = `
+      <div class="leak-box good">
+        <div class="leak-title">✅ Semua Tahap Sehat</div>
+        <div class="leak-body">Gak ada titik yang di bawah 60% dari rate ideal buat ${tipeLabel(tipe)}. Disiplin follow up kamu udah sesuai rencana — pertahankan.</div>
+      </div>
+    `;
+  }
+
+  document.getElementById('result-e').innerHTML = rowsHTML + advisorHTML;
+  document.getElementById('result-e').classList.add('show');
 }
 
-// ── OMZET REAL & DEAL SALES PER PEKAN ──────────────────
-// Pekan = Senin s/d Sabtu (6 hari kerja), Minggu SELALU dikecualikan
-// (toko tutup). Pekan 1 SELALU mulai dari tanggal 1 bulan itu, apapun
-// harinya, sampai Sabtu pertama yang ketemu — jadi pekan 1 bisa lebih
-// pendek dari 6 hari kalau tanggal 1 gak jatuh di hari Senin. Pekan
-// berikutnya baru full Senin-Sabtu. Ini otomatis nyesuaian di bulan
-// apapun, gak hardcode ke September doang.
-function getWeekBucket(date){
-  var day=date.getDate();
-  var dow=date.getDay(); // 0=Minggu,1=Senin,...,6=Sabtu
-  if(dow===0) return -1; // Minggu, dikecualikan dari pekan manapun
+// ══════════════════════════════════════════════════════
+// SKOR ADS CREATIVE — rentang skor berdasarkan patokan user sendiri
+// (CPM, CTR, Frekuensi), Hook Rate pakai standar industri SEMENTARA
+// (belum ada patokan dari user, bisa dikalibrasi ulang nanti).
+// ══════════════════════════════════════════════════════
+let CREATIVE_TIPE = 'video';
 
-  var firstDow=new Date(date.getFullYear(),date.getMonth(),1).getDay();
-  var firstSaturday = firstDow===6 ? 1 : firstDow===0 ? 7 : 1+(6-firstDow);
-
-  if(day<=firstSaturday) return 1;
-
-  var offset=day-firstSaturday; // hari ke berapa setelah pekan 1 berakhir
-  return 2+Math.floor((offset-2)/7);
+function setCreativeTipe(tipe){
+  CREATIVE_TIPE = tipe;
+  document.getElementById('btn-tipe-video').classList.toggle('active', tipe==='video');
+  document.getElementById('btn-tipe-image').classList.toggle('active', tipe==='image');
+  document.getElementById('row-f-hookrate').style.display = tipe==='video' ? 'block' : 'none';
 }
 
-function renderWeeklyChart(d){
-  var rows=D.deal_kasir||[];
-  destroyChart('chart-weekly');
-  if(!rows.length){
-    document.getElementById('weekly-empty').style.display='block';
-    document.getElementById('chart-weekly').style.display='none';
+function scoreCPM(v){ if(v<=35000) return 100; if(v<=50000) return 75; if(v<=70000) return 40; return 10; }
+function scoreCTR(v){ if(v>=2) return 100; if(v>=1) return 75; if(v>=0.5) return 40; return 10; }
+function scoreFrekuensi(v){ if(v<=1.5) return 100; if(v<=2.0) return 75; if(v<=3.0) return 40; return 10; }
+function scoreHookRate(v){ if(v>=30) return 100; if(v>=20) return 75; if(v>=10) return 40; return 10; }
+function scoreLabel(s){ if(s>=100) return 'Excellent'; if(s>=75) return 'Sesuai Target'; if(s>=40) return 'Kurang'; return 'Jelek'; }
+function scoreCls(s){ if(s>=100) return 's100'; if(s>=75) return 's75'; if(s>=40) return 's40'; return 's10'; }
+
+function computeCreativeScore(d){
+  const items = [];
+  items.push({key:'cpm', label:'CPM', raw:fmt(d.cpm), score:scoreCPM(d.cpm)});
+  items.push({key:'ctr', label:'CTR', raw:d.ctr+'%', score:scoreCTR(d.ctr)});
+  items.push({key:'frekuensi', label:'Frekuensi', raw:d.frekuensi+'x', score:scoreFrekuensi(d.frekuensi)});
+  if(d.tipe==='video' && d.hookRate!==null && d.hookRate!==undefined){
+    items.push({key:'hookRate', label:'Hook Rate / ThruPlay', raw:d.hookRate+'%', score:scoreHookRate(d.hookRate)});
+  }
+  const composite = items.reduce(function(s,it){return s+it.score;},0)/items.length;
+  return {items, composite:+composite.toFixed(1)};
+}
+
+function getCreatives(){
+  try{
+    const raw = localStorage.getItem('funnelcalc_creatives');
+    return raw ? JSON.parse(raw) : [];
+  }catch(e){ return []; }
+}
+function saveCreativesToStorage(list){
+  localStorage.setItem('funnelcalc_creatives', JSON.stringify(list));
+}
+
+function runCalcF(){
+  const nama = document.getElementById('input-f-nama').value.trim();
+  const cpm = numRupiah('input-f-cpm');
+  const ctr = +document.getElementById('input-f-ctr').value || 0;
+  const frekuensi = +document.getElementById('input-f-frekuensi').value || 0;
+  const hookRateVal = document.getElementById('input-f-hookrate').value;
+  const hookRate = (CREATIVE_TIPE==='video' && hookRateVal!=='') ? +hookRateVal : null;
+
+  if(!nama){ document.getElementById('result-f').innerHTML='<div class="err-box">Isi Nama Creative dulu.</div>'; document.getElementById('result-f').classList.add('show'); return; }
+  if(cpm<=0 || ctr<=0){ document.getElementById('result-f').innerHTML='<div class="err-box">Isi CPM dan CTR dulu.</div>'; document.getElementById('result-f').classList.add('show'); return; }
+
+  const data = {id:Date.now(), nama, tipe:CREATIVE_TIPE, cpm, ctr, frekuensi, hookRate};
+  const result = computeCreativeScore(data);
+  data.composite = result.composite;
+
+  renderScoreResult(data, result);
+
+  const list = getCreatives();
+  list.push(data);
+  saveCreativesToStorage(list);
+  renderLeaderboard();
+}
+
+function renderScoreResult(data, result){
+  document.getElementById('result-f').innerHTML = `
+    <div class="score-hero">
+      <div class="lbl">${esc(data.nama)}</div>
+      <div class="val">${result.composite}<span>/100</span></div>
+      <div class="sub">${data.tipe==='video'?'🎬 Video':'🖼️ Image'} · ${scoreLabel(result.composite)}</div>
+    </div>
+    ${result.items.map(function(it){
+      return `<div class="score-item">
+        <div><span class="score-item-lbl">${it.label}</span><span class="score-item-raw">${it.raw}</span></div>
+        <span class="score-item-badge ${scoreCls(it.score)}">${it.score} · ${scoreLabel(it.score)}</span>
+      </div>`;
+    }).join('')}
+    <div class="rate-note">Skor dihitung dari rata-rata ${result.items.length} indikator yang relevan buat tipe ${data.tipe==='video'?'Video':'Image'}.${data.tipe==='image'?' Hook Rate di-skip (gak relevan buat Image).':''}</div>
+  `;
+  document.getElementById('result-f').classList.add('show');
+}
+
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+function renderLeaderboard(){
+  const list = getCreatives().slice().sort(function(a,b){ return b.composite-a.composite; });
+  const el = document.getElementById('leaderboard-f');
+  if(!list.length){
+    el.innerHTML = '<div class="empty-leaderboard">Belum ada creative yang disimpan. Hitung skor di atas buat mulai ngisi leaderboard.</div>';
     return;
   }
-  document.getElementById('weekly-empty').style.display='none';
-  document.getElementById('chart-weekly').style.display='block';
-
-  var weekMap={}; // {1:{omzet,deal}, 2:{...}, ...} — Minggu (dow=0) otomatis gak pernah masuk sini
-  rows.forEach(function(r){
-    var wk=getWeekBucket(r.date);
-    if(wk<0) return; // hari Minggu, skip
-    if(!weekMap[wk]) weekMap[wk]={omzet:0,deal:0,hari:0};
-    weekMap[wk].hari+=1;
-    weekMap[wk].omzet+=r.kasir;
-    weekMap[wk].deal+=r.deal;
-  });
-  var weekNums=Object.keys(weekMap).map(Number).sort(function(a,b){return a-b;});
-  var labels=weekNums.map(function(w){return 'Pekan '+w+' ('+weekMap[w].hari+' hari)';});
-  var dataOmzet=weekNums.map(function(w){return weekMap[w].omzet;});
-  var dataDeal=weekNums.map(function(w){return weekMap[w].deal;});
-
-  // ── Omset Pelanggan (Umum+Tukang+Proyek) per pekan — dari sumber
-  // TERPISAH (Data Harian Pelanggan), dipetain ke pekan yang SAMA
-  // biar sejajar sama 2 bar yang udah ada.
-  var pelangganWeekMap={};
-  (D.data_pelanggan||[]).forEach(function(r){
-    var wk=getWeekBucket(r.date);
-    if(wk<0) return;
-    pelangganWeekMap[wk]=(pelangganWeekMap[wk]||0)+r.jumlah;
-  });
-  var dataPelanggan=weekNums.map(function(w){return pelangganWeekMap[w]||0;});
-  var hasPelanggan=Object.keys(pelangganWeekMap).length>0;
-
-  // ── Target Pekanan (garis putus-putus) — pakai Target Harian yang
-  // STABIL (Target Perusahaan ÷ Total Hari Aktif Sebulan), BUKAN
-  // Target Harian yang di section Efisiensi Marketing (itu berubah
-  // tiap hari karena dibagi hari yang UDAH berlalu). Dikali jumlah
-  // hari beneran di tiap pekan, biar Pekan 1 yang lebih pendek juga
-  // dapet target yang proporsional.
-  var targetHarianStabil = d.hari_aktif_perusahaan>0 ? (d.target_perusahaan/d.hari_aktif_perusahaan) : 0;
-  var dataTargetPekan = weekNums.map(function(w){return Math.round(targetHarianStabil*weekMap[w].hari);});
-  var hasTarget = targetHarianStabil>0;
-
-  var ctx=document.getElementById('chart-weekly').getContext('2d');
-  var datasets=[
-    {type:'bar',label:'Omzet Real',data:dataOmzet,backgroundColor:'#16A34A',borderRadius:6,order:2},
-    {type:'bar',label:'Deal Sales',data:dataDeal,backgroundColor:'#F59E0B',borderRadius:6,order:2},
-  ];
-  if(hasPelanggan){
-    datasets.push({type:'bar',label:'Omset Pelanggan (Umum+Tukang+Proyek)',data:dataPelanggan,backgroundColor:'#8B5CF6',borderRadius:6,order:2});
-  }
-  if(hasTarget){
-    datasets.push({type:'line',label:'Target Pekan',data:dataTargetPekan,borderColor:'#1C1E26',borderDash:[6,4],borderWidth:2,pointRadius:3,pointBackgroundColor:'#1C1E26',tension:0,fill:false,order:1});
-  }
-  new Chart(ctx,{
-    type:'bar',
-    data:{labels:labels,datasets:datasets},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:10}}},datalabels:{display:false}},
-      scales:{y:{beginAtZero:true,ticks:{callback:function(v){return fmt(v);}}}}}
-  });
-}
-
-
-// ── DIAGNOSE ENGINE ───────────────────────────────────
-function renderDiagnose(d){
-  var items=[];
-  var ap=d.achievement_pct;
-  var cr=d.cr_online;          // CR yang relevan untuk diagnosa = Online CR
-  var cr_overall=d.closing_rate;
-  var roas=d.roas;
-  var ld=d.leads;
-  var total_leads=d.total_leads_masuk;
-  var ttb_pct=ld.total>0?pct(ld.ttb,ld.total):0;
-  var prevYM=getPrevMonth(d.ym);
-  var prev=getMonthData(prevYM);
-  var cr_prev=prev.cr_online;  // bandingkan CR online vs bulan lalu
-  var leads_prev=prev.total_leads_masuk;
-  var roas_prev=prev.roas;
-
-  // ── Rule 1: Traffic naik + Closing Rate turun → kualitas traffic / CS
-  if(total_leads>leads_prev*1.05&&cr<cr_prev-2&&cr_prev>0){
-    items.push({type:'danger',ico:'🚨',title:'Traffic naik, Closing Rate turun',body:'Leads masuk lebih banyak ('+total_leads+' vs '+leads_prev+') tapi closing rate turun dari '+cr_prev+'% ke '+cr+'%. Kemungkinan: (1) kualitas traffic menurun — audit audience targeting, (2) CS response time melambat, atau (3) script follow-up perlu diperbarui.'});
-  }
-
-  // ── Rule 2: Closing Rate stabil + Omzet turun → transaksi atau AOV turun
-  if(ap<80&&Math.abs(cr-cr_prev)<2&&cr_prev>0){
-    items.push({type:'warn',ico:'📉',title:'Closing Rate stabil, Omzet turun',body:'Closing rate konsisten (~'+cr+'%) tapi omzet hanya '+ap+'% dari target. Kemungkinan: (1) jumlah transaksi kurang — perlu lebih banyak leads, atau (2) AOV turun — cek komposisi produk yang terjual, apakah produk bernilai rendah yang mendominasi.'});
-  }
-
-  // ── Rule 3: Lead turun + Closing Rate stabil → masalah acquisition
-  if(total_leads<leads_prev*0.85&&leads_prev>0&&Math.abs(cr-cr_prev)<3){
-    items.push({type:'danger',ico:'📡','title':'Leads turun, masalah Acquisition',body:'Jumlah leads bulan ini ('+total_leads+') turun '+Math.round((1-total_leads/leads_prev)*100)+'% dari bulan lalu ('+leads_prev+'). Closing rate masih normal. Ini sinyal masalah di hulu: (1) budget iklan kurang, (2) iklan fatigue — refresh creative, (3) reach menurun.'});
-  }
-
-  // ── Rule 4: ROAS rendah
-  if(roas>0&&roas<5){
-    items.push({type:'danger',ico:'💸',title:'ROAS rendah ('+roas+'x) — Iklan Tidak Efisien',body:'Setiap Rp 1 yang dibelanjakan iklan menghasilkan hanya Rp '+roas+' omzet. Target sehat minimal 5x, excellent di 8x+. Action: (1) audit audience dan creative yang paling boros, (2) matikan campaign CPL > Rp '+Math.round(d.cpl*1.3).toLocaleString('id-ID')+', (3) review landing page / skrip CS.'});
-  }
-
-  // ── Rule 5: TTB tinggi → kualitas traffic buruk
-  if(ttb_pct>50){
-    items.push({type:'warn',ico:'👻',title:'Ghost Leads tinggi ('+ttb_pct+'% tidak respons)',body:'Lebih dari setengah leads tidak pernah merespons. Kemungkinan: (1) response time CS > 1 jam setelah leads masuk, (2) targeting iklan tidak spesifik — banyak audience tidak relevan, (3) konten iklan tidak setting ekspektasi yang tepat.'});
-  }
-
-  // ── Rule 6: Pencapaian sangat rendah
-  if(ap<60){
-    items.push({type:'danger',ico:'🔴',title:'Pencapaian kritis: '+ap+'% dari target',body:'Omzet baru '+fmt(d.omset_real)+' dari target '+fmt(d.target)+'. Gap Rp '+fmt(d.gap_omzet)+' masih harus dipenuhi. Perlu akselerasi segera: (1) intensifkan follow-up leads yang masih Tanya ('+ld.tanya+' leads), (2) evaluasi apakah target realistis, (3) pertimbangkan tambah budget iklan.'});
-  }
-
-  // ── Rule 7: On track / exceeding
-  if(ap>=100){
-    items.push({type:'ok',ico:'🏆',title:'Target bulan ini tercapai! ('+ap+'%)',body:'Omzet sudah melampaui target sebesar +'+fmt(Math.abs(d.gap_omzet))+'. Pertahankan momentum: (1) jaga kualitas closing, (2) dorong upsell ke existing customer, (3) review apa yang berhasil bulan ini untuk direplikasi.'});
-  } else if(ap>=80&&d.hari_kerja>0){
-    var sisa_hari=22-d.hari_kerja;
-    var per_hari_needed=sisa_hari>0?Math.round(d.gap_omzet/sisa_hari):0;
-    items.push({type:'ok',ico:'🎯',title:'On Track — '+ap+'% tercapai',body:'Pencapaian bagus dengan '+d.hari_kerja+' hari kerja. Perlu tambahan ~'+fmt(per_hari_needed)+'/hari untuk '+sisa_hari+' hari tersisa agar menutup gap '+fmt(d.gap_omzet)+'.'});
-  }
-
-  // ── Rule 8: ROAS naik vs sebelumnya
-  if(roas>0&&roas_prev>0&&roas>roas_prev*1.1){
-    items.push({type:'ok',ico:'📈',title:'ROAS membaik: '+roas+'x (sebelumnya '+roas_prev+'x)',body:'Efisiensi marketing meningkat. Identifikasi campaign mana yang paling berkontribusi dan scale budget ke sana.'});
-  }
-
-  // ── Rule 9: AOV drop
-  if(d.aov>0&&prev.aov>0&&d.aov<prev.aov*0.85){
-    items.push({type:'warn',ico:'📦',title:'Average Order Value turun',body:'AOV bulan ini '+fmt(d.aov)+' vs bulan lalu '+fmt(prev.aov)+' (turun '+Math.round((1-d.aov/prev.aov)*100)+'%). Kemungkinan: (1) banyak order produk kecil/murah, (2) kurang upselling, (3) segmen pelanggan bergeser ke rumahan daripada proyek.'});
-  }
-
-  // ── Rule 10: Cost per Lead naik signifikan
-  if(d.cpl>0&&prev.cpl>0&&d.cpl>prev.cpl*1.25){
-    items.push({type:'warn',ico:'💰',title:'Cost per Lead naik '+Math.round((d.cpl/prev.cpl-1)*100)+'%',body:'CPL naik dari '+fmt(prev.cpl)+' ke '+fmt(d.cpl)+'. Iklan semakin mahal untuk acquire lead yang sama. Review: (1) tingkat persaingan iklan naik, (2) audience sudah saturasi, (3) refresh creative iklan.'});
-  }
-
-  // ── Rule 11: No data
-  if(!D.loaded||items.length===0){
-    items.push({type:'info',ico:'ℹ️',title:'Tidak ada anomali terdeteksi',body:'Semua metrik dalam kondisi normal atau data belum cukup untuk diagnosa. Lengkapi data biaya iklan dan pastikan semua sheet terupdate.'});
-  }
-
-  document.getElementById('diagnose-panel').innerHTML=items.map(function(it){
-    return'<div class="diag-item '+it.type+'">'
-      +'<div class="diag-ico">'+it.ico+'</div>'
-      +'<div><div class="diag-title">'+esc(it.title)+'</div>'
-      +'<div class="diag-body">'+esc(it.body)+'</div></div></div>';
+  el.innerHTML = list.map(function(c,i){
+    return `
+      <div class="leaderboard-row" onclick="viewCreativeDetail(${c.id})">
+        <div class="leaderboard-rank ${i===0?'top':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)}</div>
+        <div class="leaderboard-info">
+          <div class="leaderboard-name">${esc(c.nama)}</div>
+          <div class="leaderboard-meta">${c.tipe==='video'?'🎬 Video':'🖼️ Image'} · ${scoreLabel(c.composite)}</div>
+        </div>
+        <div class="leaderboard-score">${c.composite}</div>
+        <button class="leaderboard-del" onclick="event.stopPropagation();deleteCreative(${c.id})">✕</button>
+      </div>
+    `;
   }).join('');
 }
 
-function getPrevMonth(ym){
-  var p=ym.split('-');var y=+p[0],m=+p[1];
-  m--;if(m<1){m=12;y--;}
-  return y+'-'+String(m).padStart(2,'0');
+function viewCreativeDetail(id){
+  const list = getCreatives();
+  const data = list.find(function(c){ return c.id===id; });
+  if(!data) return;
+  const result = computeCreativeScore(data);
+  renderScoreResult(data, result);
+  document.getElementById('result-f').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-function formatInputOnBlur(id){
-  var el=document.getElementById(id);
-  var raw=+el.value.replace(/\./g,'').replace(/[^0-9]/g,'')||0;
-  el.value=raw>0?raw.toLocaleString('id-ID'):'';
+function deleteCreative(id){
+  const list = getCreatives().filter(function(c){ return c.id!==id; });
+  saveCreativesToStorage(list);
+  renderLeaderboard();
 }
 
-// ── EXPORT CSV ────────────────────────────────────────
-function csvRow(arr){
-  return arr.map(function(v){
-    var s=String(v===null||v===undefined?'':v);
-    return'"'+s.replace(/"/g,'""')+'"';
-  }).join(',')+'\n';
-}
-
-function exportData(){
-  if(!D.loaded){alert('Data belum selesai dimuat. Tunggu sebentar lalu coba lagi.');return;}
-  var d=getMonthData(SEL_MONTH);
-  var rows='';
-
-  // ── SECTION 1: RINGKASAN KPI ──────────────────────
-  rows+=csvRow(['RINGKASAN EKSEKUTIF — '+ymLabel(SEL_MONTH),'','']);
-  rows+=csvRow(['Metrik','Nilai','Keterangan']);
-  rows+=csvRow(['Target Omzet',d.target,'Dari Forecast / Input Manual']);
-  rows+=csvRow(['Omzet Real',d.omset_real,'Dari Sheet DASHBOARD']);
-  rows+=csvRow(['Deal Sales',d.deal_sales,'Dari Sheet DASHBOARD']);
-  rows+=csvRow(['Pencapaian (%)',d.achievement_pct+'%','Omzet Real / Target']);
-  rows+=csvRow(['Gap Omzet',d.gap_omzet,'Target - Omzet Real']);
-  rows+=csvRow(['Hari Kerja',d.hari_kerja,'Dari Sheet DASHBOARD']);
-  rows+=csvRow(['Target Harian',d.target_harian,'Target / Hari Kerja']);
-  rows+=csvRow(['','','']);
-
-  // ── SECTION 2: TRANSAKSI & LEADS ──────────────────
-  rows+=csvRow(['TRANSAKSI & LEADS','','']);
-  rows+=csvRow(['Metrik','Nilai','Keterangan']);
-  rows+=csvRow(['Jumlah Transaksi (Nota)',d.transaksi,'SUM harian dari PIVOT col E']);
-  rows+=csvRow(['Average Order Value',d.aov,'Omzet Real / Jumlah Transaksi']);
-  rows+=csvRow(['Total Leads Masuk',d.total_leads_masuk,'Leads TDK + Offline Tx']);
-  rows+=csvRow(['  → Leads WA/TDK',d.leads.total,'Dari Database TDK']);
-  rows+=csvRow(['  → Pembeli Offline',d.offline_tx,'Transaksi - Beli TDK']);
-  rows+=csvRow(['Closing Rate Kumulatif',d.closing_rate+'%','Transaksi / Total Leads']);
-  rows+=csvRow(['  → CR Online (WA/TDK)',d.cr_online+'%','Beli TDK / Leads TDK']);
-  rows+=csvRow(['  → CR Offline',d.cr_offline?'100%':'—','Walk-in = langsung beli']);
-  rows+=csvRow(['','','']);
-
-  // ── SECTION 3: LEADS BREAKDOWN (TDK) ──────────────
-  rows+=csvRow(['LEADS BREAKDOWN (DATABASE TDK)','','']);
-  rows+=csvRow(['Status','Jumlah','% dari Leads TDK']);
-  var lt=d.leads.total||1;
-  rows+=csvRow(['Beli (Closing)',d.leads.beli,pct(d.leads.beli,lt)+'%']);
-  rows+=csvRow(['Tanya (Belum Closing)',d.leads.tanya,pct(d.leads.tanya,lt)+'%']);
-  rows+=csvRow(['Tidak Tanya Tidak Beli (TTB)',d.leads.ttb,pct(d.leads.ttb,lt)+'%']);
-  rows+=csvRow(['Follow Up (Kol K)',d.leads.follow_up,pct(d.leads.follow_up,lt)+'%']);
-  rows+=csvRow(['Diarsipkan (Kol K)',d.leads.arsip,pct(d.leads.arsip,lt)+'%']);
-  rows+=csvRow(['Total',d.leads.total,'100%']);
-  rows+=csvRow(['','','']);
-
-  // ── SECTION 4: MARKETING COST ─────────────────────
-  rows+=csvRow(['MARKETING & ROAS','','']);
-  rows+=csvRow(['Metrik','Nilai','Keterangan']);
-  rows+=csvRow(['Biaya Iklan',d.actual_spend,d.actual_spend?'Dari sheet OMZET':'Belum ada data']);
-  rows+=csvRow(['ROAS / MER',d.roas?d.roas+'x':'—','Omzet Real / Biaya Iklan']);
-  rows+=csvRow(['Cost per Lead',d.cpl?d.cpl:'—','Biaya Iklan / Total Leads']);
-  rows+=csvRow(['','','']);
-
-  // ── SECTION 5: DATA HARIAN OMZET ──────────────────
-  if(d.pivot_omzet_month.length){
-    rows+=csvRow(['DATA HARIAN OMZET ('+ymLabel(SEL_MONTH)+')','','']);
-    rows+=csvRow(['Tanggal','Omzet Harian (Rp)','Target Harian (Rp)']);
-    d.pivot_omzet_month.forEach(function(r){
-      var tgl=r.date?r.date.toLocaleDateString('id-ID'):(r.label||'');
-      rows+=csvRow([tgl,r.val||0,d.target_harian]);
-    });
-    rows+=csvRow(['TOTAL',d.pivot_omzet_month.reduce(function(s,r){return s+(r.val||0);},0),'']);
-    rows+=csvRow(['','','']);
-  }
-
-  // ── SECTION 6: DATA HARIAN TRANSAKSI ──────────────
-  if(d.pivot_tx_month.length){
-    rows+=csvRow(['DATA HARIAN TRANSAKSI/NOTA ('+ymLabel(SEL_MONTH)+')','','']);
-    rows+=csvRow(['Tanggal','Jumlah Nota','']);
-    d.pivot_tx_month.forEach(function(r){
-      var tgl=r.date?r.date.toLocaleDateString('id-ID'):(r.label||'');
-      rows+=csvRow([tgl,r.count||0,'']);
-    });
-    rows+=csvRow(['TOTAL',d.transaksi,'']);
-    rows+=csvRow(['','','']);
-  }
-
-  // ── DOWNLOAD ──────────────────────────────────────
-  var filename='exec-dashboard-'+SEL_MONTH+'.csv';
-  var blob=new Blob(['\uFEFF'+rows],{type:'text/csv;charset=utf-8'});
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=filename;
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
-}
-
-// ── EVENTS ────────────────────────────────────────────
-document.getElementById('btn-refresh').addEventListener('click',function(){lsSet(CACHE_KEY,null);loadData(true);});
-document.getElementById('btn-theme').addEventListener('click',function(){
-  var isDark=document.body.classList.toggle('dark');
-  this.textContent=isDark?'☀️':'🌙';
-  lsSet('exec_theme',isDark?'dark':'light');
-  destroyChart('chart-daily');destroyChart('chart-leads');destroyChart('chart-leads-2');
-  CHART_DAILY=null;CHART_LEADS=null;CHART_LEADS_2=null;
-  renderAll();
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+gviz().then(function(table){
+  const rows = parseTable(table);
+  RATES = deriveRates(rows);
+  console.log('[Rates]', RATES);
+  renderApp();
+  loadTargetAlokasiToForm();
+  renderTargetIdealBadgeA();
+  renderTargetIdealBadgeC();
+  renderLeaderboard();
+}).catch(function(err){
+  document.getElementById('content').innerHTML = '<div class="err-box">⚠️ Gagal ambil data rate dari sheet.<br>Cek koneksi internet, atau sheet-nya mungkin berubah struktur.<br><span style="font-size:9px">'+err+'</span></div>';
 });
 
-// ── PWA ───────────────────────────────────────────────
-// Icon (icon-192.png, icon-512.png) dan manifest.json sekarang file
-// statis di folder yang sama — bukan digambar ulang tiap app dibuka.
-// <link rel="manifest">/"apple-touch-icon" di <head> sudah nunjuk ke situ.
 if('serviceWorker' in navigator){
   window.addEventListener('load',function(){
     navigator.serviceWorker.register('./sw.js')
@@ -1801,13 +1094,6 @@ if('serviceWorker' in navigator){
       .catch(function(e){console.warn('[SW]',e);});
   });
 }
-
-// ── INIT ─────────────────────────────────────────────
-var theme=lsGet('exec_theme','light');
-if(theme==='dark'){document.body.classList.add('dark');document.getElementById('btn-theme').textContent='☀️';}
-else{document.getElementById('btn-theme').textContent='🌙';}
-SEL_MONTH=nowYM();
-loadData(false);
 </script>
 </body>
 </html>
