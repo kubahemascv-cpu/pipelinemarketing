@@ -118,6 +118,12 @@ input,select,button{font-family:var(--font)}
 .score-item-badge.s40{background:var(--amb-l);color:var(--amb)}
 .score-item-badge.s10{background:var(--red-l);color:var(--red)}
 
+.score-section-lbl{font-size:10px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.03em;margin:14px 0 8px}
+.score-section-lbl:first-of-type{margin-top:0}
+.pass-badge{font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px}
+.pass-badge.pass{background:var(--grn-l);color:var(--grn)}
+.pass-badge.fail{background:var(--red-l);color:var(--red)}
+
 .leaderboard-title{font-size:13px;font-weight:800;color:var(--txt);margin:18px 0 10px}
 .leaderboard-row{display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--card);border-radius:14px;margin-bottom:8px;box-shadow:var(--shd);border:1px solid var(--bdr);cursor:pointer}
 .leaderboard-rank{font-size:16px;font-weight:800;color:var(--mut);width:26px;flex-shrink:0;text-align:center}
@@ -593,6 +599,14 @@ function renderApp(){
           <label>Hook Rate / ThruPlay (%) <span class="hint">(cuma buat Video)</span></label>
           <input type="number" inputmode="decimal" step="0.1" id="input-f-hookrate" placeholder="25">
         </div>
+        <div class="form-row">
+          <label>Result <span class="hint">(jumlah hasil/konversi, apa adanya)</span></label>
+          <input type="text" inputmode="numeric" id="input-f-result" placeholder="45" oninput="formatRupiah(this)">
+        </div>
+        <div class="form-row">
+          <label>CPR — Cost per Result (Rp) <span class="hint">(apa adanya)</span></label>
+          <input type="text" inputmode="numeric" id="input-f-cpr" placeholder="22.000" oninput="formatRupiah(this)">
+        </div>
         <button class="btn btn-primary" onclick="runCalcF()">Hitung & Simpan Skor</button>
         <div class="result-box" id="result-f"></div>
 
@@ -962,23 +976,66 @@ function setCreativeTipe(tipe){
   document.getElementById('row-f-hookrate').style.display = tipe==='video' ? 'block' : 'none';
 }
 
-function scoreCPM(v){ if(v<=35000) return 100; if(v<=50000) return 75; if(v<=70000) return 40; return 10; }
-function scoreCTR(v){ if(v>=2) return 100; if(v>=1) return 75; if(v>=0.5) return 40; return 10; }
-function scoreFrekuensi(v){ if(v<=1.5) return 100; if(v<=2.0) return 75; if(v<=3.0) return 40; return 10; }
-function scoreHookRate(v){ if(v>=30) return 100; if(v>=20) return 75; if(v>=10) return 40; return 10; }
-function scoreLabel(s){ if(s>=100) return 'Excellent'; if(s>=75) return 'Sesuai Target'; if(s>=40) return 'Kurang'; return 'Jelek'; }
-function scoreCls(s){ if(s>=100) return 's100'; if(s>=75) return 's75'; if(s>=40) return 's40'; return 's10'; }
+// ── LAPISAN 1: Pass/Fail terhadap KPI TETAP (patokan user) — jawab
+// "apakah creative ini LAYAK", bukan "siapa paling jago".
+function passCPM(v){ return v<50000; }
+function passCTR(v){ return v>=1; }
+function passFrekuensi(v){ return v<=2; }
 
-function computeCreativeScore(d){
-  const items = [];
-  items.push({key:'cpm', label:'CPM', raw:fmt(d.cpm), score:scoreCPM(d.cpm)});
-  items.push({key:'ctr', label:'CTR', raw:d.ctr+'%', score:scoreCTR(d.ctr)});
-  items.push({key:'frekuensi', label:'Frekuensi', raw:d.frekuensi+'x', score:scoreFrekuensi(d.frekuensi)});
-  if(d.tipe==='video' && d.hookRate!==null && d.hookRate!==undefined){
-    items.push({key:'hookRate', label:'Hook Rate / ThruPlay', raw:d.hookRate+'%', score:scoreHookRate(d.hookRate)});
+// ── LAPISAN 2: Skor RELATIF 0-100 di antara SEMUA creative yang
+// tersimpan (termasuk yang baru) — ini yang jawab "siapa paling jago".
+// Nilai PALING BAGUS di kumpulan itu dapet ~100, PALING JELEK dapet
+// ~0, sisanya proporsional. Kalau cuma 1 data atau semua nilainya
+// sama, otomatis 100 (gak ada basis buat dibedain).
+function relativeScore(value, allValues, lowerIsBetter){
+  const min = Math.min.apply(null, allValues);
+  const max = Math.max.apply(null, allValues);
+  if(max===min) return 100;
+  const raw = lowerIsBetter ? (max-value)/(max-min) : (value-min)/(max-min);
+  return +(raw*100).toFixed(1);
+}
+function scoreLabel(s){ if(s>=80) return 'Terbaik'; if(s>=50) return 'Menengah'; if(s>=20) return 'Lemah'; return 'Terlemah'; }
+function scoreCls(s){ if(s>=80) return 's100'; if(s>=50) return 's75'; if(s>=20) return 's40'; return 's10'; }
+
+// Hitung ulang skor RELATIF buat SEMUA creative di list sekaligus
+// (posisi tiap creative bisa geser tiap kali ada data baru/dihapus).
+function computeAllScores(list){
+  if(!list.length) return [];
+  const cpmVals = list.map(function(c){return c.cpm;});
+  const ctrVals = list.map(function(c){return c.ctr;});
+  const freqVals = list.map(function(c){return c.frekuensi;});
+  const videoWithHook = list.filter(function(c){return c.tipe==='video' && c.hookRate!=null;});
+  const hookVals = videoWithHook.map(function(c){return c.hookRate;});
+
+  return list.map(function(c){
+    const items = [
+      {key:'cpm', label:'CPM', raw:fmt(c.cpm), score:relativeScore(c.cpm, cpmVals, true), pass:passCPM(c.cpm)},
+      {key:'ctr', label:'CTR', raw:c.ctr+'%', score:relativeScore(c.ctr, ctrVals, false), pass:passCTR(c.ctr)},
+      {key:'frekuensi', label:'Frekuensi', raw:c.frekuensi+'x', score:relativeScore(c.frekuensi, freqVals, true), pass:passFrekuensi(c.frekuensi)},
+    ];
+    if(c.tipe==='video' && c.hookRate!=null){
+      items.push({key:'hookRate', label:'Hook Rate / ThruPlay', raw:c.hookRate+'%', score: hookVals.length>1?relativeScore(c.hookRate, hookVals, false):100, pass:null});
+    }
+    const composite = +(items.reduce(function(s,it){return s+it.score;},0)/items.length).toFixed(1);
+    const out = {}; for(var k in c) out[k]=c[k];
+    out.scoreItems = items; out.composite = composite;
+    return out;
+  });
+}
+
+// Winner Result (tertinggi) & CPR (terendah) — ini metrik GOAL AKHIR,
+// gak masuk skor komposit, ditampilin head-to-head apa adanya.
+function computeWinners(list){
+  const withResult = list.filter(function(c){return c.result!=null && c.result>0;});
+  const withCpr = list.filter(function(c){return c.cpr!=null && c.cpr>0;});
+  let resultWinnerId = null, cprWinnerId = null;
+  if(withResult.length){
+    resultWinnerId = withResult.reduce(function(a,b){return b.result>a.result?b:a;}).id;
   }
-  const composite = items.reduce(function(s,it){return s+it.score;},0)/items.length;
-  return {items, composite:+composite.toFixed(1)};
+  if(withCpr.length){
+    cprWinnerId = withCpr.reduce(function(a,b){return b.cpr<a.cpr?b:a;}).id;
+  }
+  return {resultWinnerId, cprWinnerId};
 }
 
 function getCreatives(){
@@ -998,36 +1055,51 @@ function runCalcF(){
   const frekuensi = +document.getElementById('input-f-frekuensi').value || 0;
   const hookRateVal = document.getElementById('input-f-hookrate').value;
   const hookRate = (CREATIVE_TIPE==='video' && hookRateVal!=='') ? +hookRateVal : null;
+  const result = numRupiah('input-f-result') || null;
+  const cpr = numRupiah('input-f-cpr') || null;
 
   if(!nama){ document.getElementById('result-f').innerHTML='<div class="err-box">Isi Nama Creative dulu.</div>'; document.getElementById('result-f').classList.add('show'); return; }
   if(cpm<=0 || ctr<=0){ document.getElementById('result-f').innerHTML='<div class="err-box">Isi CPM dan CTR dulu.</div>'; document.getElementById('result-f').classList.add('show'); return; }
 
-  const data = {id:Date.now(), nama, tipe:CREATIVE_TIPE, cpm, ctr, frekuensi, hookRate};
-  const result = computeCreativeScore(data);
-  data.composite = result.composite;
-
-  renderScoreResult(data, result);
-
+  const data = {id:Date.now(), nama, tipe:CREATIVE_TIPE, cpm, ctr, frekuensi, hookRate, result, cpr};
   const list = getCreatives();
   list.push(data);
   saveCreativesToStorage(list);
+
+  const scored = computeAllScores(list);
+  const justSaved = scored.find(function(c){return c.id===data.id;});
+  renderScoreResult(justSaved, list);
   renderLeaderboard();
 }
 
-function renderScoreResult(data, result){
+function renderScoreResult(scoredData, fullList){
+  const winners = computeWinners(fullList);
   document.getElementById('result-f').innerHTML = `
     <div class="score-hero">
-      <div class="lbl">${esc(data.nama)}</div>
-      <div class="val">${result.composite}<span>/100</span></div>
-      <div class="sub">${data.tipe==='video'?'🎬 Video':'🖼️ Image'} · ${scoreLabel(result.composite)}</div>
+      <div class="lbl">${esc(scoredData.nama)}</div>
+      <div class="val">${scoredData.composite}<span>/100</span></div>
+      <div class="sub">${scoredData.tipe==='video'?'🎬 Video':'🖼️ Image'} · Skor RELATIF (dibanding ${fullList.length} creative tersimpan)</div>
     </div>
-    ${result.items.map(function(it){
+    <div class="score-section-lbl">Lapisan 1 — Lolos KPI Tetap?</div>
+    ${scoredData.scoreItems.filter(function(it){return it.pass!==null;}).map(function(it){
+      return `<div class="score-item">
+        <div><span class="score-item-lbl">${it.label}</span><span class="score-item-raw">${it.raw}</span></div>
+        <span class="pass-badge ${it.pass?'pass':'fail'}">${it.pass?'✅ Lolos':'❌ Gak Lolos'}</span>
+      </div>`;
+    }).join('')}
+    <div class="score-section-lbl">Lapisan 2 — Skor Relatif per Indikator</div>
+    ${scoredData.scoreItems.map(function(it){
       return `<div class="score-item">
         <div><span class="score-item-lbl">${it.label}</span><span class="score-item-raw">${it.raw}</span></div>
         <span class="score-item-badge ${scoreCls(it.score)}">${it.score} · ${scoreLabel(it.score)}</span>
       </div>`;
     }).join('')}
-    <div class="rate-note">Skor dihitung dari rata-rata ${result.items.length} indikator yang relevan buat tipe ${data.tipe==='video'?'Video':'Image'}.${data.tipe==='image'?' Hook Rate di-skip (gak relevan buat Image).':''}</div>
+    ${(scoredData.result!=null || scoredData.cpr!=null) ? `
+    <div class="score-section-lbl">Goal Akhir — Apa Adanya (Head-to-Head)</div>
+    ${scoredData.result!=null?`<div class="score-item"><span class="score-item-lbl">Result</span><span class="score-item-badge ${winners.resultWinnerId===scoredData.id?'s100':'s75'}">${scoredData.result.toLocaleString('id-ID')}${winners.resultWinnerId===scoredData.id?' 🏆':''}</span></div>`:''}
+    ${scoredData.cpr!=null?`<div class="score-item"><span class="score-item-lbl">CPR</span><span class="score-item-badge ${winners.cprWinnerId===scoredData.id?'s100':'s75'}">${fmt(scoredData.cpr)}${winners.cprWinnerId===scoredData.id?' 🏆':''}</span></div>`:''}
+    `:''}
+    <div class="rate-note">Skor relatif ikut berubah tiap ada creative baru/dihapus — ini NORMAL, karena tujuannya bandingin, bukan patokan tetap. Result & CPR gak masuk skor, murni head-to-head.</div>
   `;
   document.getElementById('result-f').classList.add('show');
 }
@@ -1035,19 +1107,23 @@ function renderScoreResult(data, result){
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 
 function renderLeaderboard(){
-  const list = getCreatives().slice().sort(function(a,b){ return b.composite-a.composite; });
+  const rawList = getCreatives();
+  const scored = computeAllScores(rawList).sort(function(a,b){ return b.composite-a.composite; });
+  const winners = computeWinners(rawList);
   const el = document.getElementById('leaderboard-f');
-  if(!list.length){
+  if(!scored.length){
     el.innerHTML = '<div class="empty-leaderboard">Belum ada creative yang disimpan. Hitung skor di atas buat mulai ngisi leaderboard.</div>';
     return;
   }
-  el.innerHTML = list.map(function(c,i){
+  el.innerHTML = scored.map(function(c,i){
+    const resultTxt = c.result!=null ? c.result.toLocaleString('id-ID')+(winners.resultWinnerId===c.id?' 🏆':'') : '—';
+    const cprTxt = c.cpr!=null ? fmt(c.cpr)+(winners.cprWinnerId===c.id?' 🏆':'') : '—';
     return `
       <div class="leaderboard-row" onclick="viewCreativeDetail(${c.id})">
         <div class="leaderboard-rank ${i===0?'top':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)}</div>
         <div class="leaderboard-info">
           <div class="leaderboard-name">${esc(c.nama)}</div>
-          <div class="leaderboard-meta">${c.tipe==='video'?'🎬 Video':'🖼️ Image'} · ${scoreLabel(c.composite)}</div>
+          <div class="leaderboard-meta">${c.tipe==='video'?'🎬':'🖼️'} Result: ${resultTxt} · CPR: ${cprTxt}</div>
         </div>
         <div class="leaderboard-score">${c.composite}</div>
         <button class="leaderboard-del" onclick="event.stopPropagation();deleteCreative(${c.id})">✕</button>
@@ -1058,10 +1134,10 @@ function renderLeaderboard(){
 
 function viewCreativeDetail(id){
   const list = getCreatives();
-  const data = list.find(function(c){ return c.id===id; });
+  const scored = computeAllScores(list);
+  const data = scored.find(function(c){ return c.id===id; });
   if(!data) return;
-  const result = computeCreativeScore(data);
-  renderScoreResult(data, result);
+  renderScoreResult(data, list);
   document.getElementById('result-f').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
